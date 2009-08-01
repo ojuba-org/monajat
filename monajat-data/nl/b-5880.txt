@@ -1,0 +1,8 @@
+@lang=nl
+@ref=B
+@id=5880
+@text
+Allahoema Salli ala Mohammedin wa 'ala Aalie Mohammedin, kama
+sal-leita 'ala aal Ibrahiema innaka Hamiedoen Madzjied Allahoema barik
+'ala Mohammaden wa 'ala aal Mohammedin, kama barakta 'ala aal
+Ibrahiema, innaka Hamiedoen Madzjied

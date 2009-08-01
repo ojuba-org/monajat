@@ -1,0 +1,8 @@
+@lang=en
+@ref=B
+@id=5831
+@text
+Allahumma anta Rabbi la ilaha illa anta. Khalaqtani wa ana 'abduka wa
+ana 'ala 'ahdika wa Wa'dika mastata'tu A'udhu bika min Sharri ma
+sana'tu abu'u Laka bini'matika 'alaiya, wa Abu Laka bidhanbi faghfirli
+innahu la yaghfiru adhdhunuba illa anta

@@ -1,0 +1,7 @@
+@lang=en
+@ref=B
+@id=5883
+@text
+Allahumma Salli 'ala- Muhammadin wa azwajihi wa dhurriyyatihi kama
+sal-laita 'ala ali Ibrahim wa barik 'ala Muhammadin wa azwajihi wa
+dhurriyyatihi kama barakta 'ala ali Ibrahim innaka hamidun majid

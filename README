@@ -1,1 +1,25 @@
 This application is a supplications application provided by the Sabily community.
+
+the file format is like this
+@key=value
+or
+@key
+multiline value
+the initial space is stripped
+
+an empty line marks a paragrpha in text
+
+a full file would look like this
+
+@lang=ar
+@ref=B
+@id=789
+@text
+اللهم إني أعوذ بك من عذاب القبر وأعوذ بك من فتنة المسيح الدجال وأعوذ
+بك من فتنة المحيا وفتنة الممات اللهم إني أعوذ بك من المأثم والمغرم
+@links
+http://hadith.al-islam.com/Display/Display.asp?Doc=1&Rec=159	more from al-islam.com
+http://www.islamweb.net/newlibrary/display_book.php?flag=1&bk_no=54&ID=7044	more from islamweb.net
+@media=B789.ogg
+
+

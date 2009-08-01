@@ -1,0 +1,8 @@
+@lang=en
+@ref=B
+@id=5880
+@text
+Allahumma Salli ala Muhammadin wa 'ala Ali Muhammadin, kama sal-laita
+'ala all Ibrahima innaka Hamidun Majid Allahumma barik 'ala Muhammadin
+wa 'ala all Muhammadin, kama barakta 'ala ali Ibrahima, innaka Hamidun
+Majid

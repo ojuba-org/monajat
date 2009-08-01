@@ -1,0 +1,8 @@
+@lang=nl
+@ref=B
+@id=5883
+@text
+Allahoema Salli 'ala- Mohammedin wa azwadzjiehie wa dhurrijatiehie
+kama sal-leita 'ala ali Ibrahiem wa barik 'ala Mohammaden wa
+azwadzjiehie wa dhurrijatiehie kama barakta 'ala ali Ibrahiem innaka
+hamiedoen madzjied
