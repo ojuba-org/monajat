@@ -7,12 +7,13 @@ from random import randint
 SQL_GET_LANG_START="""SELECT rowid FROM monajat WHERE lang=? LIMIT 1"""
 SQL_GET_LANG_END="""SELECT rowid FROM monajat WHERE lang=? ORDER BY rowid DESC LIMIT 1"""
 SQL_GET_LANGS="""SELECT DISTINCT lang FROM monajat"""
-SQL_GET="""SELECT * FROM monajat WHERE lang=? AND rowid=? LIMIT 1"""
+SQL_GET="""SELECT rowid,* FROM monajat WHERE lang=? AND rowid=? LIMIT 1"""
 
 class Monajat (object):
-  def __init__(self,prefix):
-    self.__prefix=prefix
-    self.__db=os.path.join(prefix,'data.db')
+  def __init__(self):
+    self.__stack=[]
+    self.__prefix=self.__guess_prefix()
+    self.__db=os.path.join(self.__prefix,'data.db')
     self.__cn=sqlite3.connect(self.__db)
     self.__c=self.__cn.cursor()
     self.langs=map(lambda a: a[0],self.__c.execute(SQL_GET_LANGS).fetchall())
@@ -24,24 +25,30 @@ class Monajat (object):
     self.__cn.row_factory=sqlite3.Row
     self.__c=self.__cn.cursor()
 
+  def __guess_prefix(self):
+    e=os.path.dirname(sys.argv[0])
+    b=os.path.basename(sys.argv[0])
+    d=os.path.join(e,'monajat-data')
+    if os.path.isdir(d): return d
+    else: return os.path.join(e,'..','share',b)
+
   def get_prefix(self):
     return self.__prefix
   
-  def get(self,lang=None):
+  def get(self,uid=None,lang=None):
     if not lang: lang='ar'
     if lang not in self.langs: raise IndexError
     i,f=self.lang_boundary[lang]
-    row=randint(i,f)
-    return self.__c.execute(SQL_GET, (lang,row)).fetchone()
+    if not uid: uid=randint(i,f)
+    r=self.__c.execute(SQL_GET, (lang,uid)).fetchone()
+    self.__stack.append(r['rowid'])
+    return r
 
-def guess_prefix():
-  e=os.path.dirname(sys.argv[0])
-  b=os.path.basename(sys.argv[0])
-  d=os.path.join(e,'monajat-data')
-  if os.path.isdir(d): return d
-  else: return os.path.join(e,'..','share',b)
+  def get_last_one(self):
+    return self.get(uid=self.__stack[-1])
 
-if __name__ == "__main__":
-  m=Monajat(guess_prefix())
-  print m.get()['text']
-
+  def go_back(self):
+    u=self.__stack.pop()
+    r=self.get(uid=u)
+    self.__stack.pop()
+    return r

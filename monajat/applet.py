@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, os.path
-from monajat import Monajat, guess_prefix
+from monajat import Monajat
 
 import glib
 import gtk
@@ -8,7 +8,9 @@ import pynotify
 
 class applet(object):
   def __init__(self):
-    self.__m=Monajat(guess_prefix())
+    self.__m=Monajat()
+    self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
+    self.__clip2=gtk.Clipboard(selection="PRIMARY")
     self.__init_about_dialog()
     self.__init_menu()
     self.__s=gtk.status_icon_new_from_file(os.path.join(self.__m.get_prefix(),'monajat.svg'))
@@ -31,6 +33,17 @@ class applet(object):
     except glib.GError: pass
     self.__notify.set_property('body', "%s" % (self.__m.get()['text']) )
     self.__notify.show()
+
+  def __prev_cb(self, *args):
+    try: self.__notify.close()
+    except glib.GError: pass
+    self.__notify.set_property('body', "%s" % (self.__m.go_back()['text']) )
+    self.__notify.show()
+
+  def __copy_cb(self,*args):
+    r=self.__m.get_last_one()
+    self.__clip1.set_text(r['text'])
+    self.__clip2.set_text(r['text'])
 
   def __init_about_dialog(self):
     # FIXME: please add more the authors
@@ -62,7 +75,7 @@ class applet(object):
   def __init_menu(self):
     self.__menu = gtk.Menu()
     i = gtk.ImageMenuItem(gtk.STOCK_COPY)
-    #i.connect('activate', self.__copy_cb)
+    i.connect('activate', self.__copy_cb)
     self.__menu.add(i)
 
     i = gtk.ImageMenuItem(gtk.STOCK_GO_FORWARD)
@@ -70,7 +83,7 @@ class applet(object):
     self.__menu.add(i)
 
     i = gtk.ImageMenuItem(gtk.STOCK_GO_BACK)
-    #i.connect('activate', self.__prev_cb)
+    i.connect('activate', self.__prev_cb)
     self.__menu.add(i)
 
     self.__menu.add(gtk.SeparatorMenuItem())
@@ -93,7 +106,9 @@ class applet(object):
     try: self.__notify.close()
     except glib.GError: pass
     if action=="exit": gtk.main_quit()
+    elif action=="copy": self.__copy_cb()
     elif action=="next": self.__next_cb()
+    elif action=="previous": self.__prev_cb()
 
 def applet_main():
   a=applet()
