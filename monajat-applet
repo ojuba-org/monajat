@@ -1,0 +1,4 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+from monajat.applet import applet_main
+applet_main()

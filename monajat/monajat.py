@@ -11,6 +11,7 @@ SQL_GET="""SELECT * FROM monajat WHERE lang=? AND rowid=? LIMIT 1"""
 
 class Monajat (object):
   def __init__(self,prefix):
+    self.__prefix=prefix
     self.__db=os.path.join(prefix,'data.db')
     self.__cn=sqlite3.connect(self.__db)
     self.__c=self.__cn.cursor()
@@ -23,6 +24,9 @@ class Monajat (object):
     self.__cn.row_factory=sqlite3.Row
     self.__c=self.__cn.cursor()
 
+  def get_prefix(self):
+    return self.__prefix
+  
   def get(self,lang=None):
     if not lang: lang='ar'
     if lang not in self.langs: raise IndexError
