@@ -3,3 +3,5 @@
 @id=3499
 @text
 قل هو الله أحد والمعوذتين حين تمسي وتصبح ثلاث مرات تكفيك من كل شيء
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=3499&doc=2	الحديث كاملا من موقع الإسلام

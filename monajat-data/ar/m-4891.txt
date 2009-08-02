@@ -3,3 +3,5 @@
 @id=4891
 @text
 اللهم إني أعوذ بك من شر ما عملت ومن شر ما لم أعمل
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=4891&doc=1	الحديث كاملا من موقع الإسلام

@@ -3,3 +3,5 @@
 @id=3530
 @text
 اللهم اجعلني أعظم شكرك وأكثر ذكرك وأتبع نصيحتك وأحفظ وصيتك
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=3530&doc=2	الحديث كاملا من موقع الإسلام

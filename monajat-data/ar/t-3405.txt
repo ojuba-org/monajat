@@ -3,3 +3,5 @@
 @id=3405
 @text
 اللهم ألهمني رشدي وأعذني من شر نفسي
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=3405&doc=2	الحديث كاملا من موقع الإسلام

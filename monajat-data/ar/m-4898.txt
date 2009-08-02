@@ -3,3 +3,5 @@
 @id=4898
 @text
 اللهم إني أسألك الهدى والتقى والعفاف والغنى
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=4898&doc=1	الحديث كاملا من موقع الإسلام

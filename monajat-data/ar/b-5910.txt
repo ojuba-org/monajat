@@ -3,3 +3,5 @@
 @id=5910
 @text
 اللهم ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=5910&doc=0	الحديث كاملا من موقع الإسلام

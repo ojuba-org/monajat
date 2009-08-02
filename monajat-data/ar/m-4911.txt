@@ -4,3 +4,5 @@
 @text
 سبحان الله وبحمده
 ****** أحب الكلام إلى الله
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=4911&doc=1	الحديث كاملا من موقع الإسلام

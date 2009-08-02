@@ -3,3 +3,5 @@
 @id=3486
 @text
 اللهم اكفني بحلالك عن حرامك وأغنني بفضلك عمن سواك
+@links
+http://hadith.al-islam.com/Display/Display.asp?hnum=3486&doc=2	الحديث كاملا من موقع الإسلام
