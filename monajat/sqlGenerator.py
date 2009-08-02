@@ -24,9 +24,6 @@ CREATE INDEX RefIndex on monajat (ref);
 
 SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, links, media) VALUES (:lang, :ref, :id, :text, :links, :media)"""
 
-
-
-#SQL_GET_LANG_START="""SELECT rowid from nodes WHERE idNum=? LIMIT 1"""
 def parse(f):
   #parsed={}
   parsed=clear_record

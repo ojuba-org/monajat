@@ -1,0 +1,8 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+import os, os.path
+from monajat.monajat import Monajat, guess_prefix
+
+m=Monajat(guess_prefix())
+print m.get()['text']
+
