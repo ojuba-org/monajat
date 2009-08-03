@@ -22,7 +22,7 @@ class applet(object):
     self.__notify.attach_to_status_icon(self.__s)
     self.__notify.set_property('icon-name','monajat')
     self.__notify.set_property('summary', "Monajat" )
-    if 'action' in notifycaps:
+    if 'actions' in notifycaps:
       self.__notify.add_action("previous", "previous", self.__notify_cb)
       self.__notify.add_action("next", "next", self.__notify_cb)
       self.__notify.add_action("copy", "copy", self.__notify_cb)
