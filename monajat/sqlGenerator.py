@@ -57,6 +57,7 @@ def generate(prefix):
   for f in files:
     print "adding [%s]..." % f
     c.execute(SQL_ADD_ROW, parse(f))
+  c.execute('END TRANSACTION')
   cn.commit()
 
 if __name__ == "__main__":
