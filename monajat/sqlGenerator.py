@@ -49,7 +49,7 @@ def generate(prefix):
   files.sort()
   try: os.unlink(db)
   except OSError: pass
-  cn=sqlite3.connect(db)
+  cn=sqlite3.connect(db, isolation_level=None)
   c=cn.cursor()
   c.executescript(SCHEMA)
   c.execute('BEGIN TRANSACTION')
