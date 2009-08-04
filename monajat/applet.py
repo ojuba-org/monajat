@@ -8,7 +8,7 @@ import pynotify
 
 class applet(object):
   def __init__(self):
-    self.__m=Monajat()
+    self.__m=Monajat() # you may pass width like 20 chars
     self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
     self.__clip2=gtk.Clipboard(selection="PRIMARY")
     self.__init_about_dialog()
@@ -17,17 +17,21 @@ class applet(object):
     self.__s.connect('popup-menu',self.__popup_cb)
     self.__s.connect('activate',self.__next_cb)
     pynotify.init('MonajatApplet')
-    notifycaps = pynotify.get_server_caps ()
+    self.__notifycaps = pynotify.get_server_caps ()
     self.__notify=pynotify.Notification("MonajatApplet")
     self.__notify.attach_to_status_icon(self.__s)
     self.__notify.set_property('icon-name','monajat')
     self.__notify.set_property('summary', "Monajat" )
-    if 'actions' in notifycaps:
+    if 'actions' in self.__notifycaps:
       self.__notify.add_action("previous", "previous", self.__notify_cb)
       self.__notify.add_action("next", "next", self.__notify_cb)
       self.__notify.add_action("copy", "copy", self.__notify_cb)
     #self.__notify.set_timeout(60)
     self.__next_cb()
+
+  def __render_body(self, m):
+    self.__notify.set_property('body', "%s" % (m) )
+    
   def __hide_cb(self, w, *args): w.hide(); return True
 
   def __next_cb(self,*args):
