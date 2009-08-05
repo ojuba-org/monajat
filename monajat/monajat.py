@@ -2,7 +2,7 @@
 import locale
 try: locale.setlocale(locale.LC_ALL, '')
 except locale.Error: pass
-
+import textwrap
 import sys, os, os.path
 import sqlite3
 
@@ -15,7 +15,12 @@ SQL_GET_LANGS="""SELECT DISTINCT lang FROM monajat"""
 SQL_GET="""SELECT rowid,* FROM monajat WHERE lang=? AND rowid=? LIMIT 1"""
 
 class Monajat (object):
-  def __init__(self):
+  def __init__(self, width=-1):
+    self.__tw=textwrap.TextWrapper()
+    self.__tw.break_on_hyphens=False
+    self.__width=width
+    if width!=-1:  self.__tw.width=width
+
     self.__stack=[]
     self.__prefix=self.__guess_prefix()
     self.__db=os.path.join(self.__prefix,'data.db')
@@ -51,15 +56,23 @@ class Monajat (object):
 
   def get_prefix(self):
     return self.__prefix
-  
-  def get(self,uid=None,lang=None):
+
+  def __text_warp(self,text):
+    l=text.split('\n\n')
+    if self.__width==-1:
+      return "\n".join(map(lambda p: p.replace('\n',' '), l))
+    else:
+      return "\n".join(map(lambda p: self.__tw.fill(p), l))
+
+  def get(self,uid=None, lang=None):
     if not lang: lang=self.lang
     if lang not in self.langs: raise IndexError
     
     i,f=self.lang_boundary[lang]
     if not uid: uid=randint(i,f)
-    r=self.__c.execute(SQL_GET, (lang,uid)).fetchone()
+    r=dict(self.__c.execute(SQL_GET, (lang,uid)).fetchone())
     self.__stack.append(r['rowid'])
+    r['text']=self.__text_warp(r['text'])
     return r
 
   def get_last_one(self):

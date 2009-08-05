@@ -5,10 +5,11 @@ from monajat import Monajat
 import glib
 import gtk
 import pynotify
+import cgi
 
 class applet(object):
   def __init__(self):
-    self.__m=Monajat()
+    self.__m=Monajat() # you may pass width like 20 chars
     self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
     self.__clip2=gtk.Clipboard(selection="PRIMARY")
     self.__init_about_dialog()
@@ -17,27 +18,47 @@ class applet(object):
     self.__s.connect('popup-menu',self.__popup_cb)
     self.__s.connect('activate',self.__next_cb)
     pynotify.init('MonajatApplet')
+    self.__notifycaps = pynotify.get_server_caps ()
     self.__notify=pynotify.Notification("MonajatApplet")
     self.__notify.attach_to_status_icon(self.__s)
-    self.__notify.set_property('icon-name','gtk-info')
+    self.__notify.set_property('icon-name','monajat')
     self.__notify.set_property('summary', "Monajat" )
-    self.__notify.add_action("previous", "previous", self.__notify_cb)
-    self.__notify.add_action("next", "next", self.__notify_cb)
-    self.__notify.add_action("copy", "copy", self.__notify_cb)
+    if 'actions' in self.__notifycaps:
+      self.__notify.add_action("previous", "previous", self.__notify_cb)
+      self.__notify.add_action("next", "next", self.__notify_cb)
+      self.__notify.add_action("copy", "copy", self.__notify_cb)
     #self.__notify.set_timeout(60)
     self.__next_cb()
+
   def __hide_cb(self, w, *args): w.hide(); return True
+
+  def __render_body(self, m):
+    if "body-markup" in self.__notifycaps:
+      body=cgi.escape(m['text'])
+    else: body=m['text']
+    if "body-hyperlinks" in self.__notifycaps:
+      L=[]
+      links=m.get('links',u'').split(u'\n')
+      for l in links:
+        ll=l.split(u'\t',1)
+        url=cgi.escape(ll[0])
+        if len(ll)>1: t=cgi.escape(ll[1])
+        else: t=url
+        L.append(u"""<a href='%s'>%s</a>""" % (url,t))
+      l=u"\n\n".join(L)
+      body+=u"\n\n"+l
+    self.__notify.set_property('body', body)
 
   def __next_cb(self,*args):
     try: self.__notify.close()
     except glib.GError: pass
-    self.__notify.set_property('body', "%s" % (self.__m.get()['text']) )
+    self.__render_body(self.__m.get())
     self.__notify.show()
 
   def __prev_cb(self, *args):
     try: self.__notify.close()
     except glib.GError: pass
-    self.__notify.set_property('body', "%s" % (self.__m.go_back()['text']) )
+    self.__render_body(self.__m.go_back())
     self.__notify.show()
 
   def __copy_cb(self,*args):
@@ -68,8 +89,8 @@ class applet(object):
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 """)
-    self.about_dlg.set_website("http://git.ojuba.org/cgit/monajat/")
-    self.about_dlg.set_website_label("http://git.ojuba.org/cgit/monajat/")
+    self.about_dlg.set_website("https://launchpad.net/monajat")
+    self.about_dlg.set_website_label("Monajat web site")
     self.about_dlg.set_authors(["Muayyad Saleh Alsadi <alsadi@ojuba.org>"])
 
   def __init_menu(self):
