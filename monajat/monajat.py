@@ -49,7 +49,7 @@ class Monajat (object):
 
   def __guess_prefix(self):
     e=os.path.dirname(sys.argv[0])
-    b=os.path.basename(sys.argv[0])
+    b='monajat'
     d=os.path.join(e,'monajat-data')
     if os.path.isdir(d): return d
     else: return os.path.join(e,'..','share',b)

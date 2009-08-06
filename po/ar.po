@@ -1,0 +1,25 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: monajat 0.1.0\n"
+"Report-Msgid-Bugs-To: sabily.team@lists.launchpad.net\n"
+"POT-Creation-Date: 2009-08-06 13:59+0300\n"
+"PO-Revision-Date: 2009-08-06 13:59+0300\n"
+"Last-Translator: Muayyad Saleh Alsadi <alsadi@ojuba.org>\n"
+"Language-Team: Arabic <ar@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: monajat/applet.py:28 monajat/applet.py:80
+msgid "Monajat"
+msgstr "مناجاة"
+
+#: monajat/applet.py:83
+msgid "Monajat supplications"
+msgstr "برنامج الأذكار مناجاة"
