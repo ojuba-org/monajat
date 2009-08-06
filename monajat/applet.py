@@ -91,7 +91,11 @@ class applet(object):
 """)
     self.about_dlg.set_website("https://launchpad.net/monajat")
     self.about_dlg.set_website_label("Monajat web site")
-    self.about_dlg.set_authors(["Muayyad Saleh Alsadi <alsadi@ojuba.org>"])
+    self.about_dlg.set_authors(["Fadi al-katout <cutout33@gmail.com>",
+                                "Muayyad Saleh Alsadi <alsadi@ojuba.org>",
+                                "Mahyuddin Susanto <udienz@ubuntu.com>",
+                                "عبدالرحيم دوبيلار <abdulrahiem@sabi.li>",
+                                "أحمد المحمودي (Ahmed El-Mahmoudy) <aelmahmoudy@sabily.org>"])
 
   def __init_menu(self):
     self.__menu = gtk.Menu()
