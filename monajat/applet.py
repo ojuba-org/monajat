@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, os.path
 from monajat import Monajat
+import gettext
 
 import glib
 import gtk
@@ -10,6 +11,8 @@ import cgi
 class applet(object):
   def __init__(self):
     self.__m=Monajat() # you may pass width like 20 chars
+    ld=os.path.join(self.__m.get_prefix(),'..','locale')
+    gettext.install('monajat', ld, unicode=0)
     self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
     self.__clip2=gtk.Clipboard(selection="PRIMARY")
     self.__init_about_dialog()
@@ -22,7 +25,7 @@ class applet(object):
     self.__notify=pynotify.Notification("MonajatApplet")
     self.__notify.attach_to_status_icon(self.__s)
     self.__notify.set_property('icon-name','monajat')
-    self.__notify.set_property('summary', "Monajat" )
+    self.__notify.set_property('summary', _("Monajat") )
     if 'actions' in self.__notifycaps:
       self.__notify.add_action("previous", "previous", self.__notify_cb)
       self.__notify.add_action("next", "next", self.__notify_cb)
@@ -74,10 +77,10 @@ class applet(object):
     self.about_dlg.connect('response', self.__hide_cb)
     try: self.about_dlg.set_program_name("Monajat")
     except: pass
-    self.about_dlg.set_name("Monajat")
+    self.about_dlg.set_name(_("Monajat"))
     #self.about_dlg.set_version(version)
     self.about_dlg.set_copyright("Copyright © 2009 sabily.org")
-    self.about_dlg.set_comments("Monajat supplications")
+    self.about_dlg.set_comments(_("Monajat supplications"))
     self.about_dlg.set_license("""\
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
