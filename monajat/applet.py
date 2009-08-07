@@ -31,7 +31,21 @@ class applet(object):
       self.__notify.add_action("next", "next", self.__notify_cb)
       self.__notify.add_action("copy", "copy", self.__notify_cb)
     #self.__notify.set_timeout(60)
+    self.__minutes_counter=0
+    glib.timeout_add_seconds(5, self.__start_timer)
+  
+  def __start_timer(self, *args):
+    glib.timeout_add_seconds(60, self.__timed_cb)
     self.__next_cb()
+    return False
+
+  def __timed_cb(self, *args):
+    if self.__minutes_counter % 5 == 0:
+      self.__minutes_counter=1
+      self.__next_cb()
+    else:
+      self.__minutes_counter+=1
+    return True
 
   def __hide_cb(self, w, *args): w.hide(); return True
 
@@ -57,6 +71,7 @@ class applet(object):
     except glib.GError: pass
     self.__render_body(self.__m.get())
     self.__notify.show()
+    return True
 
   def __prev_cb(self, *args):
     try: self.__notify.close()
