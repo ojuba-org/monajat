@@ -1,7 +1,7 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.2.0
+Version: 2.2.1
 Release: 1%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2
@@ -81,6 +81,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files applet
 %{python_sitelib}/%{name}/applet.py*
+%{python_sitelib}/%{name}/utils.py*
 %{_bindir}/%{name}-applet
 %{_datadir}/%{name}/%{name}.svg
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
@@ -90,7 +91,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/%{name}-mod
 
 %changelog
-* Thu Aug 13 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.2.0-1
+* Thu Aug 13 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.2.1-1
 - many options to menu
 
 * Sat Aug 8 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.1.1-1
