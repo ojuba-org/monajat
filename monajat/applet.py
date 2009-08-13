@@ -28,9 +28,9 @@ class applet(object):
     self.__notify.set_property('icon-name','monajat')
     self.__notify.set_property('summary', _("Monajat") )
     if 'actions' in self.__notifycaps:
-      self.__notify.add_action("previous", "previous", self.__notify_cb)
-      self.__notify.add_action("next", "next", self.__notify_cb)
-      self.__notify.add_action("copy", "copy", self.__notify_cb)
+      self.__notify.add_action("previous", _("previous"), self.__notify_cb)
+      self.__notify.add_action("next", _("next"), self.__notify_cb)
+      self.__notify.add_action("copy", _("copy"), self.__notify_cb)
     #self.__notify.set_timeout(60)
     self.__minutes_counter=0
     glib.timeout_add_seconds(5, self.__start_timer)
@@ -51,9 +51,14 @@ class applet(object):
   def __hide_cb(self, w, *args): w.hide(); return True
 
   def __render_body(self, m):
+    merits=m['merits']
     if "body-markup" in self.__notifycaps:
       body=cgi.escape(m['text'])
-    else: body=m['text']
+      if merits: body+="""\n\n<b>%s</b>: %s""" % (_("Its Merits"),cgi.escape(merits))
+    else:
+      body=m['text']
+      if merits: body+="""\n\n** %s **: %s""" % (_("Its Merits"),merits)
+    
     if "body-hyperlinks" in self.__notifycaps:
       L=[]
       links=m.get('links',u'').split(u'\n')
@@ -149,7 +154,6 @@ class applet(object):
   def __popup_cb(self, s, button, time):
     self.__menu.popup(None, None, gtk.status_icon_position_menu, button, time, s)
 
-    
   def __notify_cb(self,notify,action):
     try: self.__notify.close()
     except glib.GError: pass

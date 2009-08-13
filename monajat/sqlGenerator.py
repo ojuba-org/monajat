@@ -15,7 +15,6 @@ CREATE TABLE "monajat" (
 	"ref" TEXT,
 	"id" TEXT,
 	"text" TEXT,
-	"manner" TEXT,
 	"merits" TEXT,
 	"links" TEXT,
 	"media" TEXT
@@ -25,7 +24,7 @@ CREATE INDEX LangIndex on monajat (lang);
 CREATE INDEX RefIndex on monajat (ref);
 """
 
-SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, links, media) VALUES (:lang, :ref, :id, :text, :links, :media)"""
+SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, merits, links, media) VALUES (:lang, :ref, :id, :text, :merits, :links, :media)"""
 
 def parse(f):
   #parsed={}

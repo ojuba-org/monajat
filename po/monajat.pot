@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Monajat 0.1.0\n"
-"Report-Msgid-Bugs-To: sabily.team@lists.launchpad.net\n"
-"POT-Creation-Date: 2009-08-06 13:59+0300\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-08-13 14:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: monajat/applet.py:28 monajat/applet.py:80
+#: monajat/applet.py:29 monajat/applet.py:105
 msgid "Monajat"
 msgstr ""
 
-#: monajat/applet.py:83
+#: monajat/applet.py:31
+msgid "previous"
+msgstr ""
+
+#: monajat/applet.py:32
+msgid "next"
+msgstr ""
+
+#: monajat/applet.py:33
+msgid "copy"
+msgstr ""
+
+#: monajat/applet.py:57 monajat/applet.py:60
+msgid "Its Merits"
+msgstr ""
+
+#: monajat/applet.py:108
 msgid "Monajat supplications"
 msgstr ""

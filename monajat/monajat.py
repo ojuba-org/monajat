@@ -73,6 +73,7 @@ class Monajat (object):
     r=dict(self.__c.execute(SQL_GET, (lang,uid)).fetchone())
     self.__stack.append(r['rowid'])
     r['text']=self.__text_warp(r['text'])
+    if r['merits']: r['merits']=self.__text_warp(r['merits'])
     return r
 
   def get_last_one(self):
