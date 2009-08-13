@@ -2,6 +2,8 @@
 @ref=T
 @id=3505
 @text
-لا حول ولا قوة إلا بالله ***** باب من أبواب الجنة
+لا حول ولا قوة إلا بالله
+@merits
+باب من أبواب الجنة
 @links
 http://hadith.al-islam.com/Display/Display.asp?hnum=3505&doc=2	الحديث كاملا من موقع الإسلام

@@ -2,6 +2,8 @@
 @ref=B
 @id=5930
 @text
-لا حول ولا قوة إلا بالله ***** كلمة من كنز الجنة
+لا حول ولا قوة إلا بالله
+@merits
+كلمة من كنز الجنة
 @links
 http://hadith.al-islam.com/Display/Display.asp?hnum=5930&doc=0	الحديث كاملا من موقع الإسلام

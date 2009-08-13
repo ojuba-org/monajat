@@ -5,7 +5,8 @@ from glob import glob
 
 clear_record={
   'lang':None,'ref':None,'id':None,
-  'text':None,'links':None,'media':None
+  'text':None,'manner':None,'merits':None,
+  'links':None,'media':None
 }
 
 SCHEMA="""
@@ -14,6 +15,8 @@ CREATE TABLE "monajat" (
 	"ref" TEXT,
 	"id" TEXT,
 	"text" TEXT,
+	"manner" TEXT,
+	"merits" TEXT,
 	"links" TEXT,
 	"media" TEXT
 );
