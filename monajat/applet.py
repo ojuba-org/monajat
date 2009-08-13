@@ -42,6 +42,7 @@ class applet(object):
     return False
 
   def __timed_cb(self, *args):
+    if not self.__minutes: return True
     if self.__minutes_counter % self.__minutes == 0:
       self.__minutes_counter=1
       self.__next_cb()
@@ -53,6 +54,7 @@ class applet(object):
 
   def __render_body(self, m):
     merits=m['merits']
+    if not self.__show_merits.get_active(): merits=None
     if "body-markup" in self.__notifycaps:
       body=cgi.escape(m['text'])
       if merits: body+="""\n\n<b>%s</b>: %s""" % (_("Its Merits"),cgi.escape(merits))
@@ -141,6 +143,10 @@ class applet(object):
     self.__menu.add(i)
 
     self.__menu.add(gtk.SeparatorMenuItem())
+
+    self.__show_merits = gtk.CheckMenuItem(_("Show merits"))
+    self.__show_merits.set_active(True)
+    self.__menu.add(self.__show_merits)
 
     self.__lang_menu = gtk.Menu()
     i=None

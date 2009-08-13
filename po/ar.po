@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: monajat 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-13 15:29+0300\n"
+"POT-Creation-Date: 2009-08-13 16:06+0300\n"
 "PO-Revision-Date: 2009-08-06 13:59+0300\n"
 "Last-Translator: Muayyad Saleh Alsadi <alsadi@ojuba.org>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -16,34 +16,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: monajat/applet.py:29 monajat/applet.py:106
+#: monajat/applet.py:31 monajat/applet.py:107
 msgid "Monajat"
 msgstr "مناجاة"
 
-#: monajat/applet.py:31
+#: monajat/applet.py:33
 msgid "previous"
 msgstr "سابق"
 
-#: monajat/applet.py:32
+#: monajat/applet.py:34
 msgid "next"
 msgstr "لاحق"
 
-#: monajat/applet.py:33
+#: monajat/applet.py:35
 msgid "copy"
 msgstr "نسخ"
 
-#: monajat/applet.py:58 monajat/applet.py:61
+#: monajat/applet.py:59 monajat/applet.py:62
 msgid "Its Merits"
 msgstr "فضائله"
 
-#: monajat/applet.py:109
+#: monajat/applet.py:110
 msgid "Monajat supplications"
 msgstr "برنامج الأذكار مناجاة"
 
-#: monajat/applet.py:151
+#: monajat/applet.py:146
+msgid "Show merits"
+msgstr "إظهار فضائل الذكر"
+
+#: monajat/applet.py:158
 msgid "Language"
 msgstr "اللغة"
 
-#: monajat/applet.py:161
+#: monajat/applet.py:170
 msgid "Time in minutes"
 msgstr "الوقت بالدقائق"

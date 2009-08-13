@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-13 15:29+0300\n"
+"POT-Creation-Date: 2009-08-13 16:06+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,34 +16,38 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: monajat/applet.py:29 monajat/applet.py:106
+#: monajat/applet.py:31 monajat/applet.py:107
 msgid "Monajat"
 msgstr ""
 
-#: monajat/applet.py:31
+#: monajat/applet.py:33
 msgid "previous"
 msgstr ""
 
-#: monajat/applet.py:32
+#: monajat/applet.py:34
 msgid "next"
 msgstr ""
 
-#: monajat/applet.py:33
+#: monajat/applet.py:35
 msgid "copy"
 msgstr ""
 
-#: monajat/applet.py:58 monajat/applet.py:61
+#: monajat/applet.py:59 monajat/applet.py:62
 msgid "Its Merits"
 msgstr ""
 
-#: monajat/applet.py:109
+#: monajat/applet.py:110
 msgid "Monajat supplications"
 msgstr ""
 
-#: monajat/applet.py:151
+#: monajat/applet.py:146
+msgid "Show merits"
+msgstr ""
+
+#: monajat/applet.py:158
 msgid "Language"
 msgstr ""
 
-#: monajat/applet.py:161
+#: monajat/applet.py:170
 msgid "Time in minutes"
 msgstr ""
