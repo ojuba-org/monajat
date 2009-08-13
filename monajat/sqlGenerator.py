@@ -5,7 +5,7 @@ from glob import glob
 
 clear_record={
   'lang':None,'ref':None,'id':None,
-  'text':None,'manner':None,'merits':None,
+  'text':None, 'merits':None,
   'links':None,'media':None
 }
 
@@ -27,8 +27,7 @@ CREATE INDEX RefIndex on monajat (ref);
 SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, merits, links, media) VALUES (:lang, :ref, :id, :text, :merits, :links, :media)"""
 
 def parse(f):
-  #parsed={}
-  parsed=clear_record
+  parsed=clear_record.copy()
   a=map(lambda l: l.decode('utf-8').rstrip(),open(f,"rt").readlines())
   key=None
   for n,l in enumerate(a):

@@ -11,6 +11,8 @@ import cgi
 
 class applet(object):
   def __init__(self):
+    self.__minutes_counter=0
+    self.__minutes=10
     self.__m=Monajat() # you may pass width like 20 chars
     ld=os.path.join(self.__m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
@@ -32,8 +34,6 @@ class applet(object):
       self.__notify.add_action("next", _("next"), self.__notify_cb)
       self.__notify.add_action("copy", _("copy"), self.__notify_cb)
     #self.__notify.set_timeout(60)
-    self.__minutes_counter=0
-    self.__minutes=10
     glib.timeout_add_seconds(10, self.__start_timer)
   
   def __start_timer(self, *args):
@@ -143,8 +143,10 @@ class applet(object):
     self.__menu.add(gtk.SeparatorMenuItem())
 
     self.__lang_menu = gtk.Menu()
+    i=None
     for j in self.__m.langs:
-      i= gtk.MenuItem(j)
+      i= gtk.RadioMenuItem(i, j)
+      i.set_active(self.__m.lang==j)
       i.connect('activate', self.__lang_cb, j)
       self.__lang_menu.add(i)
     
@@ -153,8 +155,10 @@ class applet(object):
     self.__menu.add(i)
 
     self.__time_menu = gtk.Menu()
+    i=None
     for j in range(0,31,5):
-      i= gtk.MenuItem(str(j))
+      i= gtk.RadioMenuItem(i, str(j))
+      i.set_active(self.__minutes ==j)
       i.connect('activate', self.__time_set_cb, j)
       self.__time_menu.add(i)
 
