@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, os.path
 from monajat import Monajat
+from utils import init_dbus
 import gettext
 
 import glib
@@ -65,6 +66,10 @@ class applet(object):
       l=u"\n\n".join(L)
       body+=u"\n\n"+l
     self.__notify.set_property('body', body)
+  def dbus_cb(self, *args):
+    self.__minutes_counter=0
+    self.__next_cb()
+    return 0
 
   def __next_cb(self,*args):
     try: self.__notify.close()
@@ -155,6 +160,7 @@ class applet(object):
 
 def applet_main():
   a=applet()
+  init_dbus(a.dbus_cb)
   gtk.main()
 
 if __name__ == "__main__":
