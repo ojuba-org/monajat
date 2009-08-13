@@ -33,7 +33,8 @@ class applet(object):
       self.__notify.add_action("copy", _("copy"), self.__notify_cb)
     #self.__notify.set_timeout(60)
     self.__minutes_counter=0
-    glib.timeout_add_seconds(5, self.__start_timer)
+    self.__minutes=10
+    glib.timeout_add_seconds(10, self.__start_timer)
   
   def __start_timer(self, *args):
     glib.timeout_add_seconds(60, self.__timed_cb)
@@ -41,7 +42,7 @@ class applet(object):
     return False
 
   def __timed_cb(self, *args):
-    if self.__minutes_counter % 5 == 0:
+    if self.__minutes_counter % self.__minutes == 0:
       self.__minutes_counter=1
       self.__next_cb()
     else:
@@ -72,7 +73,7 @@ class applet(object):
       body+=u"\n\n"+l
     self.__notify.set_property('body', body)
   def dbus_cb(self, *args):
-    self.__minutes_counter=0
+    self.__minutes_counter=1
     self.__next_cb()
     return 0
 
@@ -141,6 +142,28 @@ class applet(object):
 
     self.__menu.add(gtk.SeparatorMenuItem())
 
+    self.__lang_menu = gtk.Menu()
+    for j in self.__m.langs:
+      i= gtk.MenuItem(j)
+      i.connect('activate', self.__lang_cb, j)
+      self.__lang_menu.add(i)
+    
+    i= gtk.MenuItem(_("Language"))
+    i.set_submenu(self.__lang_menu)
+    self.__menu.add(i)
+
+    self.__time_menu = gtk.Menu()
+    for j in range(0,31,5):
+      i= gtk.MenuItem(str(j))
+      i.connect('activate', self.__time_set_cb, j)
+      self.__time_menu.add(i)
+
+    i= gtk.MenuItem(_("Time in minutes"))
+    i.set_submenu(self.__time_menu)
+    self.__menu.add(i)
+
+
+    self.__menu.add(gtk.SeparatorMenuItem())
     i = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
     i.connect('activate', lambda *args: self.about_dlg.run())
     self.__menu.add(i)
@@ -153,6 +176,13 @@ class applet(object):
 
   def __popup_cb(self, s, button, time):
     self.__menu.popup(None, None, gtk.status_icon_position_menu, button, time, s)
+
+  def __time_set_cb(self, m, t):
+    self.__minutes=t
+    self.__minutes_counter=1
+
+  def __lang_cb(self, m, l):
+    self.__m.set_lang(l)
 
   def __notify_cb(self,notify,action):
     try: self.__notify.close()
