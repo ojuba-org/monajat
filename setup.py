@@ -19,7 +19,7 @@ data_files=[
 data_files.extend(locales)
 
 # do the install
-setup (name='monajat', version='0.1.0',
+setup (name='monajat', version='2.2.0',
       description='Monajat Islamic Supplications',
       author='Muayyad Saleh Alsadi',
       author_email='sabily.team@lists.launchpad.net',
