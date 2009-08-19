@@ -1,11 +1,18 @@
 #! /usr/bin/python
 from distutils.core import setup
 from glob import *
+import os, sys
 # to install type: 
 # python setup.py install --root=/
 
 # generate data
 import monajat.sqlGenerator
+
+if 'clean' in sys.argv:
+  try: os.unlink('monajat-data/data.db')
+  except OSError: pass
+elif 'build' in sys.argv: monajat.sqlGenerator.generate('monajat-data')
+
 monajat.sqlGenerator.generate('monajat-data')
 
 # list locales
