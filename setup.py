@@ -13,8 +13,6 @@ if 'clean' in sys.argv:
   except OSError: pass
 elif 'build' in sys.argv: monajat.sqlGenerator.generate('monajat-data')
 
-monajat.sqlGenerator.generate('monajat-data')
-
 # list locales
 locales=map(lambda i: ('share/'+i,[''+i+'/monajat.mo',]),glob('locale/*/LC_MESSAGES'))
 # data files
