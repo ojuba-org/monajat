@@ -82,7 +82,7 @@ class applet(object):
   def __next_cb(self,*args):
     try: self.__notify.close()
     except glib.GError: pass
-    self.__render_body(self.__m.get())
+    self.__render_body(self.__m.go_forward())
     self.__notify.show()
     return True
 
@@ -93,7 +93,7 @@ class applet(object):
     self.__notify.show()
 
   def __copy_cb(self,*args):
-    r=self.__m.get_last_one()
+    r=self.__m.get_current()
     self.__clip1.set_text(r['text'])
     self.__clip2.set_text(r['text'])
 
@@ -193,6 +193,7 @@ class applet(object):
 
   def __lang_cb(self, m, l):
     self.__m.set_lang(l)
+    self.__m.go_forward()
 
   def __notify_cb(self,notify,action):
     try: self.__notify.close()
