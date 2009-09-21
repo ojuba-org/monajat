@@ -1,0 +1,10 @@
+<menu>
+	<item label="copy" id="copy" />
+	<item label="Refresh" id="refresh" />
+	<item label="Previous item" id="prev_item" />
+	<item label="Next item" id="next_item" />
+	<!-- <imageitem label="full Hadith from internet" icon="firefox" id="net" /> -->
+
+
+
+</menu>
