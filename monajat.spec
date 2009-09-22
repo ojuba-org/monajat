@@ -1,8 +1,8 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.2.1
-Release: 1%{?dist}
+Version: 2.3.0
+Release: 2%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2
 Group: System Environment/Base
@@ -16,11 +16,21 @@ BuildRequires: python, python-setuptools
 %description
 Monajat Islamic Supplications
 
+%package database
+Group: System Environment/Base
+Summary: Monajat Islamic Supplications database
+BuildArch: noarch
+%description database
+Monajat Islamic Supplications
+
+This is the database used by monajat.
+
+
 %package python
 Group: System Environment/Base
 Summary: Monajat Islamic Supplications
 BuildArch: noarch
-Requires: python, setuptool
+Requires: python, setuptool, %{name}-database
 %description python
 Monajat Islamic Supplications
 
@@ -30,9 +40,9 @@ This is the python monajat library needed by all monajat front ends
 Summary: Monajat Islamic Supplications for Desktop Tray Applet
 Group: System Environment/Base
 BuildArch: noarch
+Requires: %{name}-python
 # TODO: is it better to say gnome-python2-extras ?
-Requires: python, setuptool, pygtk2, notify-python
-Requires: monajat-python
+Requires: pygtk2, notify-python
 %description applet
 Monajat Islamic Supplications
 
@@ -42,15 +52,23 @@ This package contains the Desktop Tray Applet
 Summary: Monajat Islamic Supplications for console
 Group: System Environment/Base
 BuildArch: noarch
-# TODO: is it better to say gnome-python2-extras ?
-Requires: python, setuptool
-Requires: monajat-python
+Requires: %{name}-python
 %description mod
 Monajat Islamic Supplications
 
 This package contains a console application that can be used in issue message
 or in the profile
 
+%package screenlets
+Summary: Monajat Islamic Supplications for Screenlets
+Group: System Environment/Base
+BuildArch: noarch
+Requires: screenlets
+Requires: %{name}-python
+%description screenlets
+Monajat Islamic Supplications
+
+This package contains screenlets version
 
 %prep
 %setup -q
@@ -61,6 +79,8 @@ or in the profile
 %install
 rm -rf $RPM_BUILD_ROOT
 
+# ./gen-db.py # should be done by setup.py
+
 %{__python} setup.py install \
         --root=$RPM_BUILD_ROOT \
         --optimize=2
@@ -68,8 +88,15 @@ rm $RPM_BUILD_ROOT/%{python_sitelib}/%{name}/sql*.py*
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/icons/hicolor/scalable/apps/
 ln -s ../../../../%{name}/%{name}.svg $RPM_BUILD_ROOT/%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 
+# install the screenlets
+mkdir -p $RPM_BUILD_ROOT/%{_datadir}/
+cp -r screenlets $RPM_BUILD_ROOT/%{_datadir}/
+
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%files database
+%{_datadir}/%{name}/data.db
 
 %files python
 %doc README COPYING TODO
@@ -77,7 +104,6 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/%{name}/%{name}.py*
 %{python_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
-%{_datadir}/%{name}/data.db
 
 %files applet
 %{python_sitelib}/%{name}/applet.py*
@@ -90,7 +116,14 @@ rm -rf $RPM_BUILD_ROOT
 %files mod
 %{_bindir}/%{name}-mod
 
+%files screenlets
+%{_datadir}/screenlets/*
+
 %changelog
+* Tue Sep 22 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.3.0-2
+- split database package (to be used by plasma-widget-athkar without pulling all monajat)
+- add screenlets package
+
 * Thu Aug 13 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.2.1-1
 - many options to menu
 

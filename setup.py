@@ -11,7 +11,7 @@ import monajat.sqlGenerator
 if 'clean' in sys.argv:
   try: os.unlink('monajat-data/data.db')
   except OSError: pass
-elif 'build' in sys.argv: monajat.sqlGenerator.generate('monajat-data')
+else: monajat.sqlGenerator.generate('monajat-data')
 
 # list locales
 locales=map(lambda i: ('share/'+i,[''+i+'/monajat.mo',]),glob('locale/*/LC_MESSAGES'))
@@ -24,7 +24,7 @@ data_files=[
 data_files.extend(locales)
 
 # do the install
-setup (name='monajat', version='2.2.0',
+setup (name='monajat', version='2.3.0',
       description='Monajat Islamic Supplications',
       author='Muayyad Saleh Alsadi',
       author_email='sabily.team@lists.launchpad.net',

@@ -1,9 +1,16 @@
-2.0:
-* Rewrite monajat in Python
-
-2.1:
-* Added authors
+2.3:
+* split database package to be used by plasma-widget-athkar
+* add screenlets package
 
 2.2:
 * Add an option to show merits to menu
 * Add language and time options to menu
+
+2.1:
+* Added authors
+
+2.0:
+* Rewrite monajat in Python
+
+
+

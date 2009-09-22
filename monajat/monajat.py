@@ -92,11 +92,16 @@ class Monajat (object):
     return a[0]
 
   def __guess_prefix(self):
-    e=os.path.dirname(sys.argv[0]) or '/usr/bin/'
     b='monajat'
+    fallback_bin='/usr/bin/'
+    fallback_prefix=os.path.join(fallback_bin,'..','share',b)
+    e=os.path.dirname(sys.argv[0]) or fallback_bin
     d=os.path.join(e,'monajat-data')
     if os.path.isdir(d): return d
-    else: return os.path.join(e,'..','share',b)
+    else:
+      d=os.path.join(e,'..','share',b)
+      if os.path.isdir(d): return d
+      else: return fallback_prefix
 
   def get_prefix(self):
     return self.__prefix
