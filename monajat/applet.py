@@ -8,12 +8,14 @@ import glib
 import gtk
 import pynotify
 import cgi
+import math
 
 class applet(object):
+  __skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
   def __init__(self):
     self.__minutes_counter=0
-    self.__minutes=10
     self.__m=Monajat() # you may pass width like 20 chars
+    self.__load_conf()
     ld=os.path.join(self.__m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
     self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
@@ -35,15 +37,53 @@ class applet(object):
       self.__notify.add_action("copy", _("copy"), self.__notify_cb)
     #self.__notify.set_timeout(60)
     glib.timeout_add_seconds(10, self.__start_timer)
-  
+
+  def __default_conf(self):
+    self.__conf={}
+    self.__conf['show_merits']='1'
+    self.__conf['lang']=self.__m.lang
+    self.__conf['minutes']='10'
+
+  def __parse_conf(self, s):
+    self.__default_conf()
+    l1=map(lambda k: k.split('=',1), filter(lambda j: j,map(lambda i: i.strip(),s.splitlines())) )
+    l2=map(lambda a: (a[0].strip(),a[1].strip()),filter(lambda j: len(j)==2,l1))
+    r=dict(l2)
+    self.__conf.update(dict(l2))
+    return len(l1)==len(l2)
+
+  def __load_conf(self):
+    s=''
+    fn=os.path.expanduser('~/.monajat-applet.rc')
+    if os.path.exists(fn):
+      try: s=open(fn,'rt').read()
+      except OSError: pass
+    self.__parse_conf(s)
+    # fix types
+    try: self.__conf['minutes']=math.ceil(int(self.__conf['minutes'])/5.0)*5
+    except ValueError: self.__conf['minutes']=0
+    try: self.__conf['show_merits']=int(self.__conf['show_merits']) 
+    except ValueError: self.__conf['show_merits']=1
+    self.__m.set_lang(self.__conf['lang'])
+    self.__m.clear()
+
+  def __save_conf(self):
+    self.__conf['show_merits']=int(self.__show_merits.get_active())
+    self.__conf['lang']=self.__m.lang
+    print "** saving conf", self.__conf
+    fn=os.path.expanduser('~/.monajat-applet.rc')
+    s='\n'.join(map(lambda k: "%s=%s" % (k,str(self.__conf[k])), self.__conf.keys()))
+    try: open(fn,'wt').write(s)
+    except OSError: pass
+
   def __start_timer(self, *args):
     glib.timeout_add_seconds(60, self.__timed_cb)
     self.__next_cb()
     return False
 
   def __timed_cb(self, *args):
-    if not self.__minutes: return True
-    if self.__minutes_counter % self.__minutes == 0:
+    if not self.__conf['minutes']: return True
+    if self.__minutes_counter % self.__conf['minutes'] == 0:
       self.__minutes_counter=1
       self.__next_cb()
     else:
@@ -74,6 +114,7 @@ class applet(object):
       l=u"\n\n".join(L)
       body+=u"\n\n"+l
     self.__notify.set_property('body', body)
+
   def dbus_cb(self, *args):
     self.__minutes_counter=1
     self.__next_cb()
@@ -127,7 +168,14 @@ class applet(object):
                                 "Mahyuddin Susanto <udienz@ubuntu.com>",
                                 "عبدالرحيم دوبيلار <abdulrahiem@sabi.li>",
                                 "أحمد المحمودي (Ahmed El-Mahmoudy) <aelmahmoudy@sabily.org>"])
-
+  def __save_auto_start(self):
+    b=self.__auto_start.get_active()
+    if b and os.path.exists(self.__skip_auto_fn):
+      try: os.unlink(self.__skip_auto_fn)
+      except OSError: pass
+    elif not b:
+      open(self.__skip_auto_fn,'wt').close()
+  
   def __init_menu(self):
     self.__menu = gtk.Menu()
     i = gtk.ImageMenuItem(gtk.STOCK_COPY)
@@ -144,8 +192,14 @@ class applet(object):
 
     self.__menu.add(gtk.SeparatorMenuItem())
 
+    self.__auto_start = gtk.CheckMenuItem(_("Auto start"))
+    self.__auto_start.set_active(not os.path.exists(self.__skip_auto_fn))
+    self.__auto_start.connect('toggled', lambda *args: self.__save_auto_start())
+    self.__menu.add(self.__auto_start)
+
     self.__show_merits = gtk.CheckMenuItem(_("Show merits"))
-    self.__show_merits.set_active(True)
+    self.__show_merits.set_active(self.__conf['show_merits'])
+    self.__show_merits.connect('toggled', lambda *args: self.__save_conf())
     self.__menu.add(self.__show_merits)
 
     self.__lang_menu = gtk.Menu()
@@ -164,7 +218,7 @@ class applet(object):
     i=None
     for j in range(0,31,5):
       i= gtk.RadioMenuItem(i, str(j))
-      i.set_active(self.__minutes ==j)
+      i.set_active(self.__conf['minutes'] ==j)
       i.connect('activate', self.__time_set_cb, j)
       self.__time_menu.add(i)
 
@@ -188,12 +242,14 @@ class applet(object):
     self.__menu.popup(None, None, gtk.status_icon_position_menu, button, time, s)
 
   def __time_set_cb(self, m, t):
-    self.__minutes=t
+    self.__conf['minutes']=t
     self.__minutes_counter=1
+    self.__save_conf()
 
   def __lang_cb(self, m, l):
+    if not m.get_active(): return
     self.__m.set_lang(l)
-    self.__m.go_forward()
+    self.__save_conf()
 
   def __notify_cb(self,notify,action):
     try: self.__notify.close()
