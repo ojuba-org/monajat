@@ -1,8 +1,8 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.3.0
-Release: 2%{?dist}
+Version: 2.3.1
+Release: 1%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2
 Group: System Environment/Base
@@ -120,6 +120,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/screenlets/*
 
 %changelog
+* Wed Oct 21 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.3.1-1
+- load/save user preferences
+
 * Tue Sep 22 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 2.3.0-2
 - split database package (to be used by plasma-widget-athkar without pulling all monajat)
 - add screenlets package

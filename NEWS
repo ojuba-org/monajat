@@ -1,3 +1,6 @@
+2.3.1:
+* save/load user preferences like language
+
 2.3:
 * split database package to be used by plasma-widget-athkar
 * add screenlets package
