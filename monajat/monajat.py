@@ -87,8 +87,9 @@ class Monajat (object):
     self.lang=l
 
   def __guess_lang(self):
-    a=locale.getlocale(locale.LC_MESSAGES)[0].split('_')
-    if not a: return None
+    a=locale.getlocale(locale.LC_MESSAGES)
+    if a and a[0]: a=a[0].split('_')
+    else: return None
     return a[0]
 
   def __guess_prefix(self):
