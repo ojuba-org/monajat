@@ -109,9 +109,9 @@ class MonajatScreenlet(screenlets.Screenlet):
 		links=self.__m.get_current().get('links',u'').split(u'\n')
 		for l in links:
 			ll=l.split(u'\t',1)
-			url=cgi.escape(ll[0])
+			url=ll[0]
 			if len(ll)>1: t=cgi.escape(ll[1])
-			else: t=url
+			else: t=cgi.escape(url)
 			i= gtk.MenuItem(t)
 			i.connect("activate", self.net_menu_cb,url)
 			i.show()
