@@ -18,7 +18,6 @@ locales=map(lambda i: ('share/'+i,[''+i+'/monajat.mo',]),glob('locale/*/LC_MESSA
 # data files
 data_files=[
   ('share/monajat', ['monajat-data/data.db', 'monajat-data/monajat.svg'] ),
-  ('bin',['monajat-applet','monajat-mod'] ),
   ('/etc/xdg/autostart',['monajat-autostart.desktop']),
 ]
 data_files.extend(locales)
@@ -31,6 +30,7 @@ setup (name='monajat', version='2.3.0',
       url='http://git.ojuba.org/cgit/monajat/about/',
       license='GPLv2',
       packages=['monajat'],
+      scripts=['monajat-applet', 'monajat-mod'],
       data_files=data_files
 
 )
