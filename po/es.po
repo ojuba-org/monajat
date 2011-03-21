@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: monajat\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-08-13 16:06+0300\n"
-"PO-Revision-Date: 2010-07-29 21:26+0000\n"
-"Last-Translator: Fernando Muñoz <Unknown>\n"
+"PO-Revision-Date: 2011-03-20 22:14+0000\n"
+"Last-Translator: hhlp <os390l@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-30 03:35+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-03-21 04:41+0000\n"
+"X-Generator: Launchpad (build 12559)\n"
 
 #: monajat/applet.py:31 monajat/applet.py:107
 msgid "Monajat"
@@ -35,15 +35,15 @@ msgstr "copiar"
 
 #: monajat/applet.py:59 monajat/applet.py:62
 msgid "Its Merits"
-msgstr ""
+msgstr "Sus méritos"
 
 #: monajat/applet.py:110
 msgid "Monajat supplications"
-msgstr ""
+msgstr "Súplicas"
 
 #: monajat/applet.py:146
 msgid "Show merits"
-msgstr ""
+msgstr "Mostrar méritos"
 
 #: monajat/applet.py:158
 msgid "Language"
@@ -52,3 +52,76 @@ msgstr "Idioma"
 #: monajat/applet.py:170
 msgid "Time in minutes"
 msgstr "Tiempo en minutos"
+
+#~ msgid "Preferences"
+#~ msgstr "Preferencias"
+
+#~ msgid "this file contains the English transaltion for the application"
+#~ msgstr "este archivo contiene la traducción al inglés para la aplicación"
+
+#~ msgid "Place on screen :"
+#~ msgstr "Lugar en la pantalla:"
+
+#~ msgid "Show prayer for (sec):"
+#~ msgstr "Mostrar oración para (segundos):"
+
+#~ msgid "About"
+#~ msgstr "Acerca de"
+
+#~ msgid "Error saving user preferences!"
+#~ msgstr "Error guardando las preferencias de usuario!"
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "Save"
+#~ msgstr "Guardar"
+
+#~ msgid "Show prayer every (min):"
+#~ msgstr "Mostrar oración cada (minutos):"
+
+#~ msgid "Language :"
+#~ msgstr "Idioma:"
+
+#~ msgid "No"
+#~ msgstr "No"
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgid "Yes"
+#~ msgstr "Sí"
+
+#~ msgid "Freeze"
+#~ msgstr "Detener"
+
+#~ msgid "Maximize"
+#~ msgstr "Maximizar"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimizar"
+
+#~ msgid "Next"
+#~ msgstr "Siguiente"
+
+#~ msgid "Close"
+#~ msgstr "Cerrar"
+
+#~ msgid "Show prayer"
+#~ msgstr "Mostrar oración"
+
+#~ msgid "Previous"
+#~ msgstr "Anterior"
+
+#~ msgid "translator-credits"
+#~ msgstr ""
+#~ "Launchpad Contributions:\n"
+#~ "  Carlos Alberto Ospina https://launchpad.net/~atah\n"
+#~ "  Dawud Mendez https://launchpad.net/~dawud-mendez\n"
+#~ "  Gerardb https://launchpad.net/~gerbercar-gmail\n"
+#~ "  Guillermo Emmanuel Cáceres Díaz https://launchpad.net/~guiemm018\n"
+#~ "  Jonay https://launchpad.net/~jonay-santana\n"
+#~ "  Susana https://launchpad.net/~susana1710\n"
+#~ "  hhlp https://launchpad.net/~hhlp\n"
+#~ "  victor tejada yau https://launchpad.net/~victormtyau\n"
+#~ "  vipjonathan https://launchpad.net/~vipjonathan"
