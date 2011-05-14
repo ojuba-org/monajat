@@ -22,13 +22,13 @@ class applet(object):
     self.__clip2=gtk.Clipboard(selection="PRIMARY")
     self.__init_about_dialog()
     self.__init_menu()
-    self.__s=gtk.status_icon_new_from_file(os.path.join(self.__m.get_prefix(),'monajat.svg'))
-    self.__s.connect('popup-menu',self.__popup_cb)
-    self.__s.connect('activate',self.__next_cb)
+    #self.__s=gtk.status_icon_new_from_file(os.path.join(self.__m.get_prefix(),'monajat.svg'))
+    #self.__s.connect('popup-menu',self.__popup_cb)
+    #self.__s.connect('activate',self.__next_cb)
     pynotify.init('MonajatApplet')
     self.__notifycaps = pynotify.get_server_caps ()
     self.__notify=pynotify.Notification("MonajatApplet")
-    self.__notify.attach_to_status_icon(self.__s)
+    ##self.__notify.attach_to_status_icon(self.__s)
     self.__notify.set_property('icon-name','monajat')
     self.__notify.set_property('summary', _("Monajat") )
     if 'actions' in self.__notifycaps:
@@ -36,6 +36,12 @@ class applet(object):
       self.__notify.add_action("next", _("next"), self.__notify_cb)
       self.__notify.add_action("copy", _("copy"), self.__notify_cb)
     #self.__notify.set_timeout(60)
+    self.statusicon = gtk.StatusIcon ()
+    self.statusicon.connect('popup-menu',self.__popup_cb)
+    self.statusicon.connect('activate',self.__next_cb)
+    self.statusicon.set_title(_("Monajat"))
+    self.statusicon.set_from_file(os.path.join(self.__m.get_prefix(),'monajat.svg'))
+	
     glib.timeout_add_seconds(10, self.__start_timer)
 
   def __default_conf(self):
