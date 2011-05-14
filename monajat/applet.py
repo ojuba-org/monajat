@@ -66,7 +66,7 @@ class applet(object):
       except OSError: pass
     self.__parse_conf(s)
     # fix types
-    try: self.__conf['minutes']=math.ceil(int(self.__conf['minutes'])/5.0)*5
+    try: self.__conf['minutes']=math.ceil(float(self.__conf['minutes'])/5.0)*5
     except ValueError: self.__conf['minutes']=0
     try: self.__conf['show_merits']=int(self.__conf['show_merits']) 
     except ValueError: self.__conf['show_merits']=1
