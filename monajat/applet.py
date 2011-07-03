@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, os.path
+import itl
 from monajat import Monajat
 from utils import init_dbus
 import gettext
@@ -10,12 +11,15 @@ import pynotify
 import cgi
 import math
 
+
 class applet(object):
   __skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
   def __init__(self):
     self.__minutes_counter=0
     self.__m=Monajat() # you may pass width like 20 chars
     self.__load_conf()
+    self.prayer_items=[]
+    self.prayer=itl.PrayerTimes()
     ld=os.path.join(self.__m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
     self.__clip1=gtk.Clipboard(selection="CLIPBOARD")
@@ -88,6 +92,8 @@ class applet(object):
     return False
 
   def __timed_cb(self, *args):
+    if self.prayer.update():
+      self.update_prayer()
     if not self.__conf['minutes']: return True
     if self.__minutes_counter % self.__conf['minutes'] == 0:
       self.__minutes_counter=1
@@ -182,6 +188,16 @@ class applet(object):
     elif not b:
       open(self.__skip_auto_fn,'wt').close()
   
+  def update_prayer(self):
+    if not self.prayer_items: return
+    pt=self.prayer.get_prayers()
+    j=0
+    for p,t in zip(["Fajr", "", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
+      if not p: continue
+      i = gtk.MenuItem
+      self.prayer_items[j].set_label(u"%s %s" % (p, t.format(),))
+      j+=1
+  
   def __init_menu(self):
     self.__menu = gtk.Menu()
     i = gtk.ImageMenuItem(gtk.STOCK_COPY)
@@ -197,6 +213,16 @@ class applet(object):
     self.__menu.add(i)
 
     self.__menu.add(gtk.SeparatorMenuItem())
+
+    self.prayer_items=[]
+    for j in range(5):
+      i = gtk.MenuItem("-")
+      self.prayer_items.append(i)
+      self.__menu.add(i)
+    self.update_prayer()
+
+    self.__menu.add(gtk.SeparatorMenuItem())
+
 
     self.__auto_start = gtk.CheckMenuItem(_("Auto start"))
     self.__auto_start.set_active(not os.path.exists(self.__skip_auto_fn))
