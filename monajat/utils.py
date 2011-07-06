@@ -15,11 +15,11 @@ def init_dbus(cb, interface="org.ojuba.Monajat"):
   class Manager(dbus.service.Object):
     def __init__(self, cb, bus, path):
           dbus.service.Object.__init__(self,bus,path)
-          self.__cb=cb
+          self.cb=cb
 
     @dbus.service.method(interface, in_signature='as', out_signature='i')
     def call(self,a):
-      return self.__cb()
+      return self.cb()
 
   # values from /usr/include/dbus-1.0/dbus/dbus-shared.h
   r=bus.request_name(interface, flags=0x4)

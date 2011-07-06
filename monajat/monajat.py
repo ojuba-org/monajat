@@ -59,40 +59,40 @@ SQL_GET="""SELECT rowid,* FROM monajat WHERE rowid=? LIMIT 1"""
 
 class Monajat (object):
   def __init__(self, width=-1):
-    self.__h=HistoryEngine()
-    self.__tw=textwrap.TextWrapper()
-    self.__tw.break_on_hyphens=False
-    self.__width=width
-    if width!=-1:  self.__tw.width=width
+    self.h=HistoryEngine()
+    self.tw=textwrap.TextWrapper()
+    self.tw.break_on_hyphens=False
+    self.width=width
+    if width!=-1:  self.tw.width=width
 
-    self.__prefix=self.__guess_prefix()
-    self.__db=os.path.join(self.__prefix,'data.db')
-    self.__cn=sqlite3.connect(self.__db)
-    self.__c=self.__cn.cursor()
-    self.langs=map(lambda a: a[0],self.__c.execute(SQL_GET_LANGS).fetchall())
+    self.prefix=self.guess_prefix()
+    self.db=os.path.join(self.prefix,'data.db')
+    self.cn=sqlite3.connect(self.db)
+    self.c=self.cn.cursor()
+    self.langs=map(lambda a: a[0],self.c.execute(SQL_GET_LANGS).fetchall())
     self.lang_boundary={}
     for l in self.langs:
-      i=self.__c.execute(SQL_GET_LANG_START, (l,)).fetchone()[0]
-      f=self.__c.execute(SQL_GET_LANG_END, (l,)).fetchone()[0]
+      i=self.c.execute(SQL_GET_LANG_START, (l,)).fetchone()[0]
+      f=self.c.execute(SQL_GET_LANG_END, (l,)).fetchone()[0]
       self.lang_boundary[l]=(i,f)
-    self.__cn.row_factory=sqlite3.Row
-    self.__c=self.__cn.cursor()
+    self.cn.row_factory=sqlite3.Row
+    self.c=self.cn.cursor()
     self.fallback_lang='ar'
     self.set_lang()
 
   def set_lang(self,lang=None):
-    self.__h.go_last()
-    l=lang or self.__guess_lang() or self.fallback_lang
+    self.h.go_last()
+    l=lang or self.guess_lang() or self.fallback_lang
     if l not in self.langs: l=self.fallback_lang
     self.lang=l
 
-  def __guess_lang(self):
+  def guess_lang(self):
     a=locale.getlocale(locale.LC_MESSAGES)
     if a and a[0]: a=a[0].split('_')
     else: return None
     return a[0]
 
-  def __guess_prefix(self):
+  def guess_prefix(self):
     b='monajat'
     fallback_bin='/usr/bin/'
     fallback_prefix=os.path.join(fallback_bin,'..','share',b)
@@ -105,14 +105,14 @@ class Monajat (object):
       else: return fallback_prefix
 
   def get_prefix(self):
-    return self.__prefix
+    return self.prefix
 
-  def __text_warp(self,text):
+  def text_warp(self,text):
     l=text.split('\n\n')
-    if self.__width==-1:
+    if self.width==-1:
       return "\n".join(map(lambda p: p.replace('\n',' '), l))
     else:
-      return "\n".join(map(lambda p: self.__tw.fill(p), l))
+      return "\n".join(map(lambda p: self.tw.fill(p), l))
 
   def get(self,uid=None, lang=None):
     if not lang: lang=self.lang
@@ -121,39 +121,39 @@ class Monajat (object):
     i,f=self.lang_boundary[lang]
     if not uid:
       uid=randint(i,f)
-      self.__h.push(uid)
-    r=dict(self.__c.execute(SQL_GET, (uid,)).fetchone())
-    r['text']=self.__text_warp(r['text'])
-    if r['merits']: r['merits']=self.__text_warp(r['merits'])
+      self.h.push(uid)
+    r=dict(self.c.execute(SQL_GET, (uid,)).fetchone())
+    r['text']=self.text_warp(r['text'])
+    if r['merits']: r['merits']=self.text_warp(r['merits'])
     return r
 
   def get_current(self):
-    u=self.__h.get_current()
+    u=self.h.get_current()
     if not u: return self.get()
     return self.get(uid=u)
 
   def go_forward(self):
-    u=self.__h.go_forward()
+    u=self.h.go_forward()
     r=self.get(uid=u)
     return r
 
   def go_back(self):
-    u=self.__h.go_back()
+    u=self.h.go_back()
     if not u: return self.get_current()
     r=self.get(uid=u)
     return r
 
   def go_first(self):
-    u=self.__h.go_first()
+    u=self.h.go_first()
     if not u: return self.get_current()
     r=self.get(uid=u)
     return r
 
   def go_last(self):
-    u=self.__h.go_last()
+    u=self.h.go_last()
     if not u: return self.get_current()
     r=self.get(uid=u)
     return r
 
   def clear(self):
-    self.__h.clear()
+    self.h.clear()
