@@ -194,7 +194,7 @@ def getPrayerTimes(loc, method, date, ptList=None):
 
 
 class PrayerTimes:
-  def __init__(self, method_n=6, lat=21.43, lon=39.77, tz=3.0, dst=0, sea=0, pressure=1010, temp=10):
+  def __init__(self, method_n=6, lat=21.43, lon=39.77, tz=3.0, dst=0, alt=0, pressure=1010, temp=10, **kw):
     """
     location defaults to Mecca
     method defaults to Umm Al-Qurra
@@ -207,17 +207,18 @@ class PrayerTimes:
     self.location.degreeLat=lat
     self.location.gmtDiff=tz
     self.location.dst=dst
-    self.location.seaLevel = sea
+    print tz,dst
+    self.location.seaLevel = alt
     self.location.pressure = pressure
     self.location.temperature= temp
     self.set_method(method_n)
   
-  def set_location(self, lat=21.43, lon=39.77, tz=3.0, dst=0, sea=0, pressure=1010, temp=10):
+  def set_location(self, lat=21.43, lon=39.77, tz=3.0, dst=0, alt=0, pressure=1010, temp=10):
     self.location.degreeLong=lon
     self.location.degreeLat=lat
     self.location.gmtDiff=tz
     self.location.dst=dst
-    self.location.seaLevel = sea
+    self.location.seaLevel = alt
     self.location.pressure = pressure
     self.location.temperature= temp
     self.get_prayers(False)

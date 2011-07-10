@@ -10,16 +10,98 @@ import gtk
 import pynotify
 import cgi
 import math
+import json
 
+class ConfigDlg(gtk.Dialog):
+  def __init__(self, applet):
+    gtk.Dialog.__init__(self)
+    self.applet=applet
+    self.m=applet.m
+    self.connect('delete-event', lambda w,*a: w.hide() or True)
+    self.connect('response', lambda w,*a: w.hide() or True)
+    self.set_title(_('Monajat Configuration'))
+    self.add_button(_('Cancel'), gtk.RESPONSE_CANCEL)
+    self.add_button(_('Save'), gtk.RESPONSE_OK)
+    tabs=gtk.Notebook()
+    self.get_content_area().add(tabs)
+    vb=gtk.VBox()
+    tabs.append_page(vb, gtk.Label(_('Generic')))
+    self.auto_start = b = gtk.CheckButton(_("Auto start"))
+    self.auto_start.set_active(not os.path.exists(self.applet.skip_auto_fn))
+    vb.pack_start(b, False, False, 2)
+    self.show_merits = b = gtk.CheckButton(_("Show merits"))
+    self.show_merits.set_active(self.applet.conf['show_merits'])
+    vb.pack_start(b, False, False, 2)
+    hb = gtk.HBox()
+    vb.pack_start(hb, True, True, 2)
+    hb.pack_start(gtk.Label(_('Language:')), False, False, 2)
+    self.lang = b = gtk.combo_box_new_text()
+    hb.pack_start(b, False, False, 2)
+    selected = 0
+    for i,j in enumerate(self.applet.m.langs):
+      b.append_text(j)
+      if self.m.lang==j: selected=i
+    b.set_active(selected)
+    
+    hb = gtk.HBox()
+    vb.pack_start(hb, True, True, 2)
+    hb.pack_start(gtk.Label(_('Time:')), False, False, 2)
+    self.timeout = b = gtk.SpinButton(gtk.Adjustment(5, 0, 90, 5, 5))
+    b.set_value(self.applet.conf['minutes'])
+    hb.pack_start(b, False, False, 2)
+    hb.pack_start(gtk.Label(_('minutes')), False, False, 2)
+
+    vb=gtk.VBox()
+    tabs.append_page(vb, gtk.Label(_('Location')))
+    
+    s = gtk.TreeStore(str, bool, int) # label, is_city, id
+    self.cities_tree=tree=gtk.TreeView(s)
+    col=gtk.TreeViewColumn('Location', gtk.CellRendererText(), text=0)
+    col.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+    tree.insert_column(col, -1)
+    tree.set_enable_search(True)
+    tree.set_search_column(0)
+    tree.set_headers_visible(False)
+    tree.set_tooltip_column(0)
+    
+    scroll=gtk.ScrolledWindow()
+    scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
+    scroll.add(tree)
+    vb.pack_start(scroll, True, True, 2)
+    self._fill_cities()
+
+  def _fill_cities(self):
+    tree=self.cities_tree
+    s=tree.get_model()
+    rows=self.m.cities_c.execute('SELECT * FROM cities')
+    country, country_i = None, None
+    state, state_i=None, None
+    for R in rows:
+      r=dict(R)
+      if country!=r['country']:
+        country_i=s.append(None,(r['country'], False, 0))
+      if state!=r['state']:
+        state_i=s.append(country_i,(r['state'], False, 0))
+      country=r['country']
+      state=r['state']
+      #city=u'%s - %s' % (r['name'], r['local_name']) # FIXME: should be locale with e
+      city=r['name']
+      s.append(state_i,(city, True, 0))
+
+  def run(self, *a, **kw):
+    self.auto_start.set_active(not os.path.exists(self.applet.skip_auto_fn))
+    return gtk.Dialog.run(self, *a, **kw)
 
 class applet(object):
   skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
   def __init__(self):
+    self.conf_dlg=None
     self.minutes_counter=0
     self.m=Monajat() # you may pass width like 20 chars
     self.load_conf()
     self.prayer_items=[]
-    self.prayer=itl.PrayerTimes()
+    kw=self.conf_to_prayer_args()
+    self.prayer=itl.PrayerTimes(**kw)
     ld=os.path.join(self.m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
     self.clip1=gtk.Clipboard(selection="CLIPBOARD")
@@ -31,6 +113,7 @@ class applet(object):
     #self.s.connect('activate',self.next_cb)
     pynotify.init('MonajatApplet')
     self.notifycaps = pynotify.get_server_caps ()
+    print self.notifycaps
     self.notify=pynotify.Notification("MonajatApplet")
     ##self.notify.attach_to_status_icon(self.s)
     self.notify.set_property('icon-name','monajat')
@@ -45,14 +128,44 @@ class applet(object):
     self.statusicon.connect('activate',self.next_cb)
     self.statusicon.set_title(_("Monajat"))
     self.statusicon.set_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
-	
+
     glib.timeout_add_seconds(10, self.start_timer)
+
+  def config_cb(self, *a):
+    if self.conf_dlg==None:
+      self.conf_dlg=ConfigDlg(self)
+      self.conf_dlg.show_all()
+    r=self.conf_dlg.run()
+    if r==gtk.RESPONSE_OK:
+      self.save_auto_start()
+      self.save_conf()
 
   def default_conf(self):
     self.conf={}
     self.conf['show_merits']='1'
     self.conf['lang']=self.m.lang
     self.conf['minutes']='10'
+
+  def conf_to_prayer_args(self):
+    kw={}
+    if not self.conf.has_key('city_id'): return kw
+    c=self.m.cities_c
+    try: c_id=int(self.conf['city_id'])
+    except ValueError: return kw
+    except TypeError: return kw
+    r=c.execute('SELECT * FROM cities AS c LEFT JOIN dst as d ON d.id=dst WHERE c.id=?', (c_id,)).fetchone()
+    kw=dict(r)
+    kw["tz"]=kw["utc"]
+    dst=kw["dst"]
+    if not dst: kw["dst"]=0
+    else:
+      # FIXME: allow DST to be fetched from machine local setting
+      # FIXME: add DST logic here
+      kw["dst"]=1
+    print kw
+    #lat=21.43, lon=39.77, tz=3.0, dst=0, alt=0, pressure=1010, temp=10
+    return kw
+
 
   def parse_conf(self, s):
     self.default_conf()
@@ -78,8 +191,9 @@ class applet(object):
     self.m.clear()
 
   def save_conf(self):
-    self.conf['show_merits']=int(self.show_merits.get_active())
-    self.conf['lang']=self.m.lang
+    self.conf['show_merits']=int(self.conf_dlg.show_merits.get_active())
+    self.conf['lang']=self.conf_dlg.lang.get_active_text()
+    self.conf['minutes']=int(self.conf_dlg.timeout.get_value())
     print "** saving conf", self.conf
     fn=os.path.expanduser('~/.monajat-applet.rc')
     s='\n'.join(map(lambda k: "%s=%s" % (k,str(self.conf[k])), self.conf.keys()))
@@ -106,7 +220,7 @@ class applet(object):
 
   def render_body(self, m):
     merits=m['merits']
-    if not self.show_merits.get_active(): merits=None
+    if not self.conf['show_merits']: merits=None
     if "body-markup" in self.notifycaps:
       body=cgi.escape(m['text'])
       if merits: body+="""\n\n<b>%s</b>: %s""" % (_("Its Merits"),cgi.escape(merits))
@@ -181,7 +295,7 @@ class applet(object):
                                 "عبدالرحيم دوبيلار <abdulrahiem@sabi.li>",
                                 "أحمد المحمودي (Ahmed El-Mahmoudy) <aelmahmoudy@sabily.org>"])
   def save_auto_start(self):
-    b=self.auto_start.get_active()
+    b=self.conf_dlg.auto_start.get_active()
     if b and os.path.exists(self.skip_auto_fn):
       try: os.unlink(self.skip_auto_fn)
       except OSError: pass
@@ -192,7 +306,7 @@ class applet(object):
     if not self.prayer_items: return
     pt=self.prayer.get_prayers()
     j=0
-    for p,t in zip(["Fajr", "", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
+    for p,t in zip(["", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
       if not p: continue
       i = gtk.MenuItem
       self.prayer_items[j].set_label(u"%s %s" % (p, t.format(),))
@@ -222,44 +336,13 @@ class applet(object):
     self.update_prayer()
 
     self.menu.add(gtk.SeparatorMenuItem())
-
-
-    self.auto_start = gtk.CheckMenuItem(_("Auto start"))
-    self.auto_start.set_active(not os.path.exists(self.skip_auto_fn))
-    self.auto_start.connect('toggled', lambda *args: self.save_auto_start())
-    self.menu.add(self.auto_start)
-
-    self.show_merits = gtk.CheckMenuItem(_("Show merits"))
-    self.show_merits.set_active(self.conf['show_merits'])
-    self.show_merits.connect('toggled', lambda *args: self.save_conf())
-    self.menu.add(self.show_merits)
-
-    self.lang_menu = gtk.Menu()
-    i=None
-    for j in self.m.langs:
-      i= gtk.RadioMenuItem(i, j)
-      i.set_active(self.m.lang==j)
-      i.connect('activate', self.lang_cb, j)
-      self.lang_menu.add(i)
     
-    i= gtk.MenuItem(_("Language"))
-    i.set_submenu(self.lang_menu)
+    i = gtk.MenuItem(_("Configure"))
+    i.connect('activate', self.config_cb)
     self.menu.add(i)
-
-    self.time_menu = gtk.Menu()
-    i=None
-    for j in range(0,31,5):
-      i= gtk.RadioMenuItem(i, str(j))
-      i.set_active(self.conf['minutes'] ==j)
-      i.connect('activate', self.time_set_cb, j)
-      self.time_menu.add(i)
-
-    i= gtk.MenuItem(_("Time in minutes"))
-    i.set_submenu(self.time_menu)
-    self.menu.add(i)
-
-
+    
     self.menu.add(gtk.SeparatorMenuItem())
+
     i = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
     i.connect('activate', lambda *args: self.about_dlg.run())
     self.menu.add(i)

@@ -79,6 +79,10 @@ class Monajat (object):
     self.c=self.cn.cursor()
     self.fallback_lang='ar'
     self.set_lang()
+    self.cities_db=os.path.join(self.prefix,'cities.db')
+    self.cities_cn=sqlite3.connect(self.cities_db)
+    self.cities_cn.row_factory=sqlite3.Row
+    self.cities_c=self.cities_cn.cursor()
 
   def set_lang(self,lang=None):
     self.h.go_last()
