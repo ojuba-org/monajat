@@ -58,6 +58,12 @@ class ConfigDlg(gtk.Dialog):
     vb=gtk.VBox()
     tabs.append_page(vb, gtk.Label(_('Location')))
     
+    hb=gtk.HBox()
+    vb.pack_start(hb, False, False, 2)
+    e=gtk.Entry()
+    e.connect('activate', self._city_search_cb)
+    hb.pack_start(e, False, False, 2)
+    
     s = gtk.TreeStore(str, bool, int) # label, is_city, id
     self.cities_tree=tree=gtk.TreeView(s)
     col=gtk.TreeViewColumn('Location', gtk.CellRendererText(), text=0)
@@ -74,6 +80,22 @@ class ConfigDlg(gtk.Dialog):
     vb.pack_start(scroll, True, True, 2)
     self._fill_cities()
 
+  def _city_search_cb(self, e):
+    tree=self.cities_tree
+    store, p=tree.get_selection().get_selected_rows()
+    if p: current=p[0]
+    else: current=None
+    txt=e.get_text()
+    def tree_walk_cb(model, path, i):
+      if current and path<current: return False
+      if txt in store.get_value(i,0):
+        tree.expand_to_path(path)
+        tree.scroll_to_cell(path)
+        tree.get_selection().select_iter(i)
+        return True
+    store = tree.get_model()
+    store.foreach(tree_walk_cb)
+    
   def _fill_cities(self):
     tree=self.cities_tree
     s=tree.get_model()
