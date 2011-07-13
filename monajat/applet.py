@@ -90,7 +90,7 @@ class ConfigDlg(gtk.Dialog):
       state=r['state']
       city=u'%s - %s' % (r['name'], r['locale_name'])
       #city=r['name']
-      s.append(state_i,(city, True, 0))
+      s.append(state_i,(city, True, r['id']))
 
   def run(self, *a, **kw):
     self.auto_start.set_active(not os.path.exists(self.applet.skip_auto_fn))
@@ -190,6 +190,11 @@ class applet(object):
       try: s=open(fn,'rt').read()
       except OSError: pass
     self.parse_conf(s)
+    # make sure city_id is set using the same db
+    if self.conf.has_key('city_id') and \
+      not self.conf.has_key('cities_db_ver') or \
+      self.conf['cities_db_ver']!=self.m.cities_db_ver:
+        del self.conf['city_id']
     # fix types
     try: self.conf['minutes']=math.ceil(float(self.conf['minutes'])/5.0)*5
     except ValueError: self.conf['minutes']=0
@@ -199,9 +204,14 @@ class applet(object):
     self.m.clear()
 
   def save_conf(self):
+    self.conf['cities_db_ver']=self.m.cities_db_ver
     self.conf['show_merits']=int(self.conf_dlg.show_merits.get_active())
     self.conf['lang']=self.conf_dlg.lang.get_active_text()
     self.conf['minutes']=int(self.conf_dlg.timeout.get_value())
+    m, p=self.conf_dlg.cities_tree.get_selection().get_selected_rows()
+    if p:
+      city_id=m[p[0]][2]
+      if city_id: self.conf['city_id']=city_id
     print "** saving conf", self.conf
     fn=os.path.expanduser('~/.monajat-applet.rc')
     s='\n'.join(map(lambda k: "%s=%s" % (k,str(self.conf[k])), self.conf.keys()))
@@ -314,7 +324,7 @@ class applet(object):
     if not self.prayer_items: return
     pt=self.prayer.get_prayers()
     j=0
-    for p,t in zip(["", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
+    for p,t in zip(["Fajr", "", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
       if not p: continue
       i = gtk.MenuItem
       self.prayer_items[j].set_label(u"%s %s" % (p, t.format(),))

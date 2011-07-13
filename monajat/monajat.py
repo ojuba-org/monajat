@@ -83,6 +83,10 @@ class Monajat (object):
     self.cities_cn=sqlite3.connect(self.cities_db)
     self.cities_cn.row_factory=sqlite3.Row
     self.cities_c=self.cities_cn.cursor()
+    r=self.cities_c.execute('select v from params where k=?', ('ver',)).fetchone()
+    print dict(r)
+    if r: self.cities_db_ver=r['v']
+    else: self.cities_db_ver='0'
 
   def set_lang(self,lang=None):
     self.h.go_last()
