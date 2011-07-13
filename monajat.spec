@@ -1,7 +1,7 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.3.2
+Version: 2.5.0
 Release: 1%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2
@@ -98,12 +98,13 @@ cp -r screenlets $RPM_BUILD_ROOT/%{_datadir}/
 rm -rf $RPM_BUILD_ROOT
 
 %files database
-%{_datadir}/%{name}/data.db
+%{_datadir}/%{name}/*.db
 
 %files python
 %doc README COPYING TODO
 %{python_sitelib}/%{name}/__init__.py*
 %{python_sitelib}/%{name}/%{name}.py*
+%{python_sitelib}/%{name}/itl.py*
 %{python_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
@@ -122,6 +123,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/screenlets/*
 
 %changelog
+* Thu Jul 14 2011 Muayyad Saleh Alsadi <alsadi@ojuba.org> - 2.5.0-1
+- prayer time support
+
 * Thu Jun 17 2010 Muayyad Saleh Alsadi <alsadi@ojuba.org> - 2.3.2-1
 - Override build & clean commands in a cleaner manne
 - Install monajat-applet & monajat-mod as scripts
