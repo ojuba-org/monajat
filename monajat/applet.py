@@ -12,6 +12,10 @@ import cgi
 import math
 import json
 
+# in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
+# in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
+# "resident"
+
 class ConfigDlg(gtk.Dialog):
   def __init__(self, applet):
     gtk.Dialog.__init__(self)
@@ -84,8 +88,8 @@ class ConfigDlg(gtk.Dialog):
         state_i=s.append(country_i,(r['state'], False, 0))
       country=r['country']
       state=r['state']
-      #city=u'%s - %s' % (r['name'], r['local_name']) # FIXME: should be locale with e
-      city=r['name']
+      city=u'%s - %s' % (r['name'], r['locale_name'])
+      #city=r['name']
       s.append(state_i,(city, True, 0))
 
   def run(self, *a, **kw):
@@ -115,15 +119,19 @@ class applet(object):
     self.notifycaps = pynotify.get_server_caps ()
     print self.notifycaps
     self.notify=pynotify.Notification("MonajatApplet")
-    ##self.notify.attach_to_status_icon(self.s)
     self.notify.set_property('icon-name','monajat')
     self.notify.set_property('summary', _("Monajat") )
     if 'actions' in self.notifycaps:
       self.notify.add_action("previous", _("previous"), self.notify_cb)
       self.notify.add_action("next", _("next"), self.notify_cb)
       self.notify.add_action("copy", _("copy"), self.notify_cb)
-    #self.notify.set_timeout(60)
+    self.notify.set_timeout(5000)
+    self.notify.set_urgency(pynotify.URGENCY_LOW)
+    self.notify.set_hint('resident', True)
+    #self.notify.set_hint('transient', True)
+
     self.statusicon = gtk.StatusIcon ()
+    #self.notify.attach_to_status_icon(self.statusicon)
     self.statusicon.connect('popup-menu',self.popup_cb)
     self.statusicon.connect('activate',self.next_cb)
     self.statusicon.set_title(_("Monajat"))
@@ -153,10 +161,10 @@ class applet(object):
     try: c_id=int(self.conf['city_id'])
     except ValueError: return kw
     except TypeError: return kw
-    r=c.execute('SELECT * FROM cities AS c LEFT JOIN dst as d ON d.id=dst WHERE c.id=?', (c_id,)).fetchone()
+    r=c.execute('SELECT * FROM cities AS c LEFT JOIN dst AS d ON d.i=dst_id WHERE c.id=?', (c_id,)).fetchone()
     kw=dict(r)
     kw["tz"]=kw["utc"]
-    dst=kw["dst"]
+    dst=kw["dst_id"]
     if not dst: kw["dst"]=0
     else:
       # FIXME: allow DST to be fetched from machine local setting
