@@ -81,20 +81,32 @@ class ConfigDlg(gtk.Dialog):
     self._fill_cities()
 
   def _city_search_cb(self, e):
+    # FIXME: if same as last successful search text don't update first_match_path
+    # FIXME: and if self.city_found same as first_match_path highlight in red
+    txt=e.get_text().strip()
+    e.modify_base(gtk.STATE_NORMAL, None)
     tree=self.cities_tree
     store, p=tree.get_selection().get_selected_rows()
     if p: current=p[0]
     else: current=None
-    txt=e.get_text()
+    limit=None
     def tree_walk_cb(model, path, i):
-      if current and path<current: return False
+      if current and path<=current: return False
+      if limit and path>=limit: return True
       if txt in store.get_value(i,0):
         tree.expand_to_path(path)
         tree.scroll_to_cell(path)
         tree.get_selection().select_iter(i)
+        self.city_found=path
         return True
-    store = tree.get_model()
+    self.city_found=None
     store.foreach(tree_walk_cb)
+    if not self.city_found:
+      limit=current
+      current=None
+      store.foreach(tree_walk_cb)
+      if not self.city_found:
+        e.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFCCCC"))
     
   def _fill_cities(self):
     tree=self.cities_tree
