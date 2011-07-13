@@ -80,6 +80,7 @@ class ConfigDlg(gtk.Dialog):
     rows=self.m.cities_c.execute('SELECT * FROM cities')
     country, country_i = None, None
     state, state_i=None, None
+    city_path=None
     for R in rows:
       r=dict(R)
       if country!=r['country']:
@@ -90,7 +91,12 @@ class ConfigDlg(gtk.Dialog):
       state=r['state']
       city=u'%s - %s' % (r['name'], r['locale_name'])
       #city=r['name']
-      s.append(state_i,(city, True, r['id']))
+      city_i=s.append(state_i,(city, True, r['id']))
+      if self.applet.conf.get('city_id',None)==r['id']: city_path=s.get_path(city_i)
+    if city_path:
+      tree.expand_to_path(city_path)
+      tree.get_selection().select_path(city_path)
+      tree.scroll_to_cell(city_path)
 
   def run(self, *a, **kw):
     self.auto_start.set_active(not os.path.exists(self.applet.skip_auto_fn))
@@ -190,11 +196,16 @@ class applet(object):
       try: s=open(fn,'rt').read()
       except OSError: pass
     self.parse_conf(s)
-    # make sure city_id is set using the same db
-    if self.conf.has_key('city_id') and \
-      not self.conf.has_key('cities_db_ver') or \
-      self.conf['cities_db_ver']!=self.m.cities_db_ver:
-        del self.conf['city_id']
+    if self.conf.has_key('city_id'):
+      # make sure city_id is set using the same db
+      if not self.conf.has_key('cities_db_ver') or \
+        self.conf['cities_db_ver']!=self.m.cities_db_ver:
+          del self.conf['city_id']
+      # make sure it's integer
+      try: c_id=int(self.conf['city_id'])
+      except ValueError: del self.conf['city_id']
+      except TypeError: del self.conf['city_id']
+      else: self.conf['city_id']=c_id
     # fix types
     try: self.conf['minutes']=math.ceil(float(self.conf['minutes'])/5.0)*5
     except ValueError: self.conf['minutes']=0
