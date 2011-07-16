@@ -495,7 +495,7 @@ class applet(object):
     if not self.prayer_items: return
     pt=self.prayer.get_prayers()
     j=0
-    ptn=self.ptnames.copy()
+    ptn=list(self.ptnames)
     self.ptnames[1]=''
     for p,t in zip(ptn, pt):
       if not p: continue
