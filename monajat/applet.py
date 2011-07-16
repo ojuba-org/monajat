@@ -11,6 +11,7 @@ import pynotify
 import cgi
 import math
 import json
+import time
 
 # in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
 # in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
@@ -21,6 +22,8 @@ class ConfigDlg(gtk.Dialog):
     gtk.Dialog.__init__(self)
     self.applet=applet
     self.m=applet.m
+    self.set_size_request(300,400)
+    self.set_resizable(False) # FIXME: reconsider this
     self.connect('delete-event', lambda w,*a: w.hide() or True)
     self.connect('response', lambda w,*a: w.hide() or True)
     self.set_title(_('Monajat Configuration'))
@@ -37,7 +40,7 @@ class ConfigDlg(gtk.Dialog):
     self.show_merits.set_active(self.applet.conf['show_merits'])
     vb.pack_start(b, False, False, 2)
     hb = gtk.HBox()
-    vb.pack_start(hb, True, True, 2)
+    vb.pack_start(hb, False, False, 2)
     hb.pack_start(gtk.Label(_('Language:')), False, False, 2)
     self.lang = b = gtk.combo_box_new_text()
     hb.pack_start(b, False, False, 2)
@@ -48,12 +51,13 @@ class ConfigDlg(gtk.Dialog):
     b.set_active(selected)
     
     hb = gtk.HBox()
-    vb.pack_start(hb, True, True, 2)
+    vb.pack_start(hb, False, False, 2)
     hb.pack_start(gtk.Label(_('Time:')), False, False, 2)
+    hb.pack_start(gtk.HBox(), True, True, 2)
     self.timeout = b = gtk.SpinButton(gtk.Adjustment(5, 0, 90, 5, 5))
     b.set_value(self.applet.conf['minutes'])
     hb.pack_start(b, False, False, 2)
-    hb.pack_start(gtk.Label(_('minutes')), False, False, 2)
+    hb.pack_start(gtk.Label(_('Minutes')), False, False, 2)
 
     vb=gtk.VBox()
     tabs.append_page(vb, gtk.Label(_('Location')))
@@ -166,7 +170,7 @@ class applet(object):
       self.notify.add_action("next", _("next"), self.notify_cb)
       self.notify.add_action("copy", _("copy"), self.notify_cb)
     self.notify.set_timeout(5000)
-    self.notify.set_urgency(pynotify.URGENCY_LOW)
+    #self.notify.set_urgency(pynotify.URGENCY_LOW)
     self.notify.set_hint('resident', True)
     #self.notify.set_hint('transient', True)
 
@@ -202,14 +206,19 @@ class applet(object):
     except ValueError: return kw
     except TypeError: return kw
     r=c.execute('SELECT * FROM cities AS c LEFT JOIN dst AS d ON d.i=dst_id WHERE c.id=?', (c_id,)).fetchone()
+    # FIXME: if not r: defaults to Makka
     kw=dict(r)
+    if "alt" not in kw or not kw["alt"]: kw["alt"]=0.0
     kw["tz"]=kw["utc"]
-    dst=kw["dst_id"]
-    if not dst: kw["dst"]=0
-    else:
-      # FIXME: allow DST to be fetched from machine local setting
-      # FIXME: add DST logic here
-      kw["dst"]=1
+    # NOTE: get DST from machine local setting
+    kw["dst"]=time.daylight
+    # FIXME: dst should have the following 3 options
+    # a. auto from system, b. auto from algorithm, c. specified to 0/1 by user
+    #dst=kw["dst_id"]
+    #if not dst: kw["dst"]=0
+    #else:
+    #  # FIXME: add DST logic here
+    #  kw["dst"]=1
     print kw
     #lat=21.43, lon=39.77, tz=3.0, dst=0, alt=0, pressure=1010, temp=10
     return kw
@@ -248,6 +257,15 @@ class applet(object):
     self.m.set_lang(self.conf['lang'])
     self.m.clear()
 
+  def apply_conf(self):
+    kw=self.conf_to_prayer_args()
+    self.prayer=itl.PrayerTimes(**kw)
+    self.update_prayer()
+    self.m.clear()
+    self.m.set_lang(self.conf['lang'])
+    self.render_body(self.m.go_forward())
+
+
   def save_conf(self):
     self.conf['cities_db_ver']=self.m.cities_db_ver
     self.conf['show_merits']=int(self.conf_dlg.show_merits.get_active())
@@ -262,6 +280,7 @@ class applet(object):
     s='\n'.join(map(lambda k: "%s=%s" % (k,str(self.conf[k])), self.conf.keys()))
     try: open(fn,'wt').write(s)
     except OSError: pass
+    self.apply_conf()
 
   def start_timer(self, *args):
     glib.timeout_add_seconds(60, self.timed_cb)
@@ -369,23 +388,26 @@ class applet(object):
     if not self.prayer_items: return
     pt=self.prayer.get_prayers()
     j=0
-    for p,t in zip(["Fajr", "", "Dhuhr", "Asr", "Maghrib", "Isha'a"], pt):
+    for p,t in zip([_("Fajr"), "", _("Dhuhr"), _("Asr"), _("Maghrib"), _("Isha'a")], pt):
       if not p: continue
       i = gtk.MenuItem
-      self.prayer_items[j].set_label(u"%s %s" % (p, t.format(),))
+      self.prayer_items[j].set_label(u"%-10s %s" % (p, t.format(),))
       j+=1
   
   def init_menu(self):
     self.menu = gtk.Menu()
     i = gtk.ImageMenuItem(gtk.STOCK_COPY)
+    i.set_always_show_image(True)
     i.connect('activate', self.copy_cb)
     self.menu.add(i)
 
     i = gtk.ImageMenuItem(gtk.STOCK_GO_FORWARD)
+    i.set_always_show_image(True)
     i.connect('activate', self.next_cb)
     self.menu.add(i)
 
     i = gtk.ImageMenuItem(gtk.STOCK_GO_BACK)
+    i.set_always_show_image(True)
     i.connect('activate', self.prev_cb)
     self.menu.add(i)
 
@@ -407,10 +429,12 @@ class applet(object):
     self.menu.add(gtk.SeparatorMenuItem())
 
     i = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
+    i.set_always_show_image(True)
     i.connect('activate', lambda *args: self.about_dlg.run())
     self.menu.add(i)
     
     i = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+    i.set_always_show_image(True)
     i.connect('activate', gtk.main_quit)
     self.menu.add(i)
 
@@ -438,6 +462,7 @@ class applet(object):
     elif action=="previous": self.prev_cb()
 
 def applet_main():
+  gtk.window_set_default_icon_name('monajat')
   a=applet()
   init_dbus(a.dbus_cb)
   gtk.main()

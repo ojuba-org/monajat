@@ -98,12 +98,13 @@ cp -r screenlets $RPM_BUILD_ROOT/%{_datadir}/
 rm -rf $RPM_BUILD_ROOT
 
 %files database
-%{_datadir}/%{name}/data.db
+%{_datadir}/%{name}/*.db
 
 %files python
 %doc README COPYING TODO
 %{python_sitelib}/%{name}/__init__.py*
 %{python_sitelib}/%{name}/%{name}.py*
+%{python_sitelib}/%{name}/itl.py*
 %{python_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
