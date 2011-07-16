@@ -104,7 +104,7 @@ class Monajat (object):
     b='monajat'
     fallback_bin='/usr/bin/'
     fallback_prefix=os.path.join(fallback_bin,'..','share',b)
-    e=os.path.dirname(sys.argv[0]) or fallback_bin
+    e=os.path.realpath(os.path.dirname(sys.argv[0]) or fallback_bin)
     d=os.path.join(e,'monajat-data')
     if os.path.isdir(d): return d
     else:

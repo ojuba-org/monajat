@@ -12,10 +12,40 @@ import cgi
 import math
 import json
 import time
+from functools  import cmp_to_key
+import gst
 
 # in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
 # in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
 # "resident"
+
+class soundplayer:
+  def __init__(self, fn=""):
+    self.player = gst.element_factory_make("playbin2", "player")
+    if os.path.isfile(fn):
+      self.player.set_property("uri", "file://" + fn)
+    bus = self.player.get_bus()
+    bus.add_signal_watch()
+    bus.connect("message", self.on_message)
+    
+  def play(self):
+    self.player.set_state(gst.STATE_PLAYING)
+  
+  def stop(self):
+    self.player.set_state(gst.STATE_NULL)
+  
+  def set_file_name(self,fn):
+    if not os.path.isfile(fn): return False
+    self.player.set_property("uri", "file://" + fn)
+    
+  def on_message(self, bus, message):
+    t = message.type
+    if t == gst.MESSAGE_EOS:self.player.set_state(gst.STATE_NULL)
+    elif t == gst.MESSAGE_ERROR:
+      self.player.set_state(gst.STATE_NULL)
+      err, debug = message.parse_error()
+      print "Error: %s" % err, debug
+
 
 class ConfigDlg(gtk.Dialog):
   def __init__(self, applet):
@@ -148,10 +178,15 @@ class applet(object):
     self.m=Monajat() # you may pass width like 20 chars
     self.load_conf()
     self.prayer_items=[]
+    self.sound_player=soundplayer()
+    #TODO: mke this configurable
+    self.sound_file_n=os.path.join(self.m.get_prefix(),'sample.ogg')
+    #print self.sound_file_n
     kw=self.conf_to_prayer_args()
     self.prayer=itl.PrayerTimes(**kw)
     ld=os.path.join(self.m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
+    self.ptnames=[_("Fajr"), _("Sunrise"), _("Dhuhr"), _("Asr"), _("Maghrib"), _("Isha'a")]
     self.clip1=gtk.Clipboard(selection="CLIPBOARD")
     self.clip2=gtk.Clipboard(selection="PRIMARY")
     self.init_about_dialog()
@@ -182,6 +217,57 @@ class applet(object):
     self.statusicon.set_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
 
     glib.timeout_add_seconds(10, self.start_timer)
+
+  def get_nextprayer(self,pt,newday=False):
+    #self.prayer.get_prayers()
+    #for p,t in zip(range(0,5),pt)
+    ##get_date_prayer
+    s=time.localtime()
+    todaytime = '%i-%i-%i 00:00:00' %(s.tm_year,s.tm_mon,s.tm_mday)
+    tdict={}
+    k=0
+    for t in pt:
+      timst = (t.hour*3600)+(t.minute*60)+(t.second)
+      if newday: timst += 24*3600
+      timst+=int(time.mktime(time.strptime(todaytime, '%Y-%m-%d %H:%M:%S')))
+      rt=timst-time.time()
+      td=int(rt)
+      ptime={"hours":td/3600, "minutes": (td/60) % 60, "seconds": td % 60}
+      tdict[k]=[ptime, rt]
+      k+=1
+    ntimes=dict(filter(lambda (a,b): b[1] >=0, tdict.items()))
+    if ntimes: k=min(ntimes,key=cmp_to_key(lambda x,c: cmp(tdict[x],tdict[c])))
+    else: return self.get_nextprayer(self.prayer.get_prayers(False),True) 
+    #self.prayer.get_date_prayer(s.tm_year,s.tm_mon,s.tm_mday+1))
+    #print dict(filter(lambda (a,b): b[1] >=0, tdict.items()))
+    #print k
+    return k,tdict[k][0]
+    
+  def nextprayer_note(self, tdict):
+    k, tdict = tdict
+    if tdict['hours']>0:
+      ret=_("""\n\n<b>Remaining time to ( %s ): %02d hours and %02d minutes</b>""") % (self.ptnames[k],tdict['hours'], tdict['minutes'])
+      istime=False
+      isnear=False
+    else:
+      if tdict['minutes']>=5:
+        ret=_("""\n\n<b>Remaining time to ( %s ): %02d minutes.</b>""") % (self.ptnames[k],tdict['minutes'])
+        istime=False
+        isnear=False
+      elif tdict['minutes']>0:
+        ret=_("""<b>Remaining time to ( %s ): %02d minutes.</b>\n\n""") % (self.ptnames[k], tdict['minutes'])
+        istime=False
+        isnear=True
+      else:
+        if tdict['seconds']>1:
+          ret=_("""<b>Remaining time to ( %s ): less than a minute.</b>\n\n""") % (self.ptnames[k])
+          istime=False
+          isnear=True
+        else:
+          ret=_("""<b>It's now time to ( %s ).</b>\n\n""") % (self.ptnames[k])
+          istime=True
+          isnear=True
+    return ret, isnear, istime
 
   def config_cb(self, *a):
     if self.conf_dlg==None:
@@ -284,9 +370,27 @@ class applet(object):
 
   def start_timer(self, *args):
     glib.timeout_add_seconds(60, self.timed_cb)
+    glib.timeout_add_seconds(1, self.az_timed_cb)
     self.next_cb()
     return False
 
+  def az_timed_cb(self, *args):
+    tt=self.get_nextprayer(self.prayer.get_prayers())
+    td=tt[1]
+    if td['hours']>0: return True
+    if td['minutes']>=5: return True
+    if td['minutes']==4 and td['seconds']==59 or td['minutes']==0 and td['seconds']==1:
+      timeNP,isnear, istime = self.nextprayer_note(tt)
+      self.notify.set_property('body', timeNP)
+      self.notify.show()
+    if td['minutes']==0 and td['seconds']==1 and tt[1]!=1:
+      #self.sound_file_n='/media/DATA/ojuba/ojprojects/monajat/b/monajat-data/sample.ogg'
+      #FIXME: make sure file name is gst supported
+      self.sound_player.set_file_name(self.sound_file_n)
+      self.sound_player.play()
+    #print tt,self.ptnames
+    return True
+    
   def timed_cb(self, *args):
     if self.prayer.update():
       self.update_prayer()
@@ -321,6 +425,9 @@ class applet(object):
         L.append(u"""<a href='%s'>%s</a>""" % (url,t))
       l=u"\n\n".join(L)
       body+=u"\n\n"+l
+    timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
+    if not isnear: body+=timeNP
+    else: body=timeNP+body
     self.notify.set_property('body', body)
 
   def dbus_cb(self, *args):
@@ -388,7 +495,9 @@ class applet(object):
     if not self.prayer_items: return
     pt=self.prayer.get_prayers()
     j=0
-    for p,t in zip([_("Fajr"), "", _("Dhuhr"), _("Asr"), _("Maghrib"), _("Isha'a")], pt):
+    ptn=self.ptnames.copy()
+    self.ptnames[1]=''
+    for p,t in zip(ptn, pt):
       if not p: continue
       i = gtk.MenuItem
       self.prayer_items[j].set_label(u"%-10s %s" % (p, t.format(),))
