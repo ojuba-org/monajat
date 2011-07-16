@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: monajat 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-16 22:35+0300\n"
+"POT-Creation-Date: 2011-07-16 22:38+0300\n"
 "PO-Revision-Date: 2009-12-17 08:12+0000\n"
 "Last-Translator: Muayyad Alsadi <Unknown>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -19,46 +19,44 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: monajat/applet.py:29
-#, fuzzy
 msgid "Monajat Configuration"
-msgstr "برنامج الأذكار مناجاة"
+msgstr "إعدادات مناجاة"
 
 #: monajat/applet.py:30
 msgid "Cancel"
-msgstr ""
+msgstr "إلغاء"
 
 #: monajat/applet.py:31
 msgid "Save"
-msgstr ""
+msgstr "حفظ"
 
 #: monajat/applet.py:35
 msgid "Generic"
-msgstr ""
+msgstr "عام"
 
 #: monajat/applet.py:36
 msgid "Auto start"
-msgstr ""
+msgstr "بدء تلقائي"
 
 #: monajat/applet.py:39
 msgid "Show merits"
 msgstr "إظهار فضائل الذكر"
 
 #: monajat/applet.py:44
-#, fuzzy
 msgid "Language:"
-msgstr "اللغة"
+msgstr "اللغة:"
 
 #: monajat/applet.py:55
 msgid "Time:"
-msgstr ""
+msgstr "الوقت:"
 
 #: monajat/applet.py:60
 msgid "Minutes"
-msgstr ""
+msgstr "دقيقة"
 
 #: monajat/applet.py:63
 msgid "Location"
-msgstr ""
+msgstr "الموقع"
 
 #: monajat/applet.py:167 monajat/applet.py:181 monajat/applet.py:357
 msgid "Monajat"
@@ -86,27 +84,27 @@ msgstr "برنامج الأذكار مناجاة"
 
 #: monajat/applet.py:391
 msgid "Fajr"
-msgstr ""
+msgstr "الفجر"
 
 #: monajat/applet.py:391
 msgid "Dhuhr"
-msgstr ""
+msgstr "الظهر"
 
 #: monajat/applet.py:391
 msgid "Asr"
-msgstr ""
+msgstr "العصر"
 
 #: monajat/applet.py:391
 msgid "Maghrib"
-msgstr ""
+msgstr "المغرب"
 
 #: monajat/applet.py:391
 msgid "Isha'a"
-msgstr ""
+msgstr "العشاء"
 
 #: monajat/applet.py:425
 msgid "Configure"
-msgstr ""
+msgstr "إعداد"
 
 #~ msgid "Time in minutes"
 #~ msgstr "الوقت بالدقائق"
