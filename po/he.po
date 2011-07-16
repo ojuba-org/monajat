@@ -6,50 +6,103 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: monajat\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-08-13 16:06+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-16 22:35+0300\n"
 "PO-Revision-Date: 2010-01-18 10:43+0000\n"
-"Last-Translator: Launchpad Translations Administrators "
-"<rosetta@launchpad.net>\n"
+"Last-Translator: Launchpad Translations Administrators <rosetta@launchpad."
+"net>\n"
 "Language-Team: Hebrew <he@li.org>\n"
+"Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2010-01-19 04:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: monajat/applet.py:31 monajat/applet.py:107
-msgid "Monajat"
-msgstr "Monajat"
-
-#: monajat/applet.py:33
-msgid "previous"
+#: monajat/applet.py:29
+msgid "Monajat Configuration"
 msgstr ""
 
-#: monajat/applet.py:34
-msgid "next"
+#: monajat/applet.py:30
+msgid "Cancel"
+msgstr ""
+
+#: monajat/applet.py:31
+msgid "Save"
 msgstr ""
 
 #: monajat/applet.py:35
-msgid "copy"
+msgid "Generic"
 msgstr ""
 
-#: monajat/applet.py:59 monajat/applet.py:62
-msgid "Its Merits"
+#: monajat/applet.py:36
+msgid "Auto start"
 msgstr ""
 
-#: monajat/applet.py:110
-msgid "Monajat supplications"
-msgstr ""
-
-#: monajat/applet.py:146
+#: monajat/applet.py:39
 msgid "Show merits"
 msgstr ""
 
-#: monajat/applet.py:158
-msgid "Language"
+#: monajat/applet.py:44
+msgid "Language:"
+msgstr ""
+
+#: monajat/applet.py:55
+msgid "Time:"
+msgstr ""
+
+#: monajat/applet.py:60
+msgid "Minutes"
+msgstr ""
+
+#: monajat/applet.py:63
+msgid "Location"
+msgstr ""
+
+#: monajat/applet.py:167 monajat/applet.py:181 monajat/applet.py:357
+msgid "Monajat"
+msgstr "Monajat"
+
+#: monajat/applet.py:169
+msgid "previous"
 msgstr ""
 
 #: monajat/applet.py:170
-msgid "Time in minutes"
+msgid "next"
+msgstr ""
+
+#: monajat/applet.py:171
+msgid "copy"
+msgstr ""
+
+#: monajat/applet.py:308 monajat/applet.py:311
+msgid "Its Merits"
+msgstr ""
+
+#: monajat/applet.py:360
+msgid "Monajat supplications"
+msgstr ""
+
+#: monajat/applet.py:391
+msgid "Fajr"
+msgstr ""
+
+#: monajat/applet.py:391
+msgid "Dhuhr"
+msgstr ""
+
+#: monajat/applet.py:391
+msgid "Asr"
+msgstr ""
+
+#: monajat/applet.py:391
+msgid "Maghrib"
+msgstr ""
+
+#: monajat/applet.py:391
+msgid "Isha'a"
+msgstr ""
+
+#: monajat/applet.py:425
+msgid "Configure"
 msgstr ""
