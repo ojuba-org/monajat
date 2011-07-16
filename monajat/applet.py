@@ -496,7 +496,7 @@ class applet(object):
     pt=self.prayer.get_prayers()
     j=0
     ptn=list(self.ptnames)
-    self.ptnames[1]=''
+    ptn[1]=''
     for p,t in zip(ptn, pt):
       if not p: continue
       i = gtk.MenuItem
