@@ -112,7 +112,53 @@ class ConfigDlg(gtk.Dialog):
     scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
     scroll.add(tree)
     vb.pack_start(scroll, True, True, 2)
+
+    self.player = soundplayer()
+    vb=gtk.VBox()
+    tabs.append_page(vb, gtk.Label(_('Notification')))
+    hb=gtk.HBox()
+    vb.pack_start(hb, False, True, 3)
+    hb.pack_start(gtk.Label(_('Sound:')), False, True, 2)
+    self.sound_file = b = gtk.FileChooserButton('Choosefile')
+    ff=gtk.FileFilter()
+    ff.set_name(_('Sound Files'))
+    ff.add_pattern('*.ogg')
+    ff.add_pattern('*.mp3')
+    b.add_filter(ff)
+    ff=gtk.FileFilter()
+    ff.set_name(_('All files'))
+    ff.add_pattern('*')
+    b.add_filter(ff)
+    pb=gtk.Button(_('Play'))
+    pb.connect('clicked', self.play_cb)
+    hb.pack_end(pb, False, False, 2)
+    hb.pack_end(b, True, True, 5)
+    
+    hb = gtk.HBox()
+    vb.pack_start(hb, False, False, 3)
+    self.noteb4_b = b = gtk.CheckButton(_("Notification before time"))
+    self.noteb4_t = t = gtk.SpinButton(gtk.Adjustment(5, 5, 20, 5, 5))
+    b.set_active(self.applet.conf['note_b_pt'])
+    t.set_value(self.applet.conf['note_b_pt_min'])
+    hb.pack_start(b,True,True,2)
+    hb.pack_start(t,False,False,2)
+    
     self._fill_cities()
+
+  def play_cb(self, b):
+    fn=self.sound_file.get_filename()
+    if not fn: fn=''
+    if b.get_label() == _('Play'):
+      if not os.path.isfile(fn): return
+      self.player.set_file_name(fn)
+      self.player.play()
+      self.sound_file.set_sensitive(False)
+      b.set_property('label', _('Stop'))
+    else:
+      self.player.stop()
+      self.sound_file.set_sensitive(True)
+      b.set_property('label', _('Play'))
+
 
   def _city_search_cb(self, e):
     # FIXME: if same as last successful search text don't update first_match_path
@@ -174,6 +220,7 @@ class applet(object):
   skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
   def __init__(self):
     self.conf_dlg=None
+    self.chngbody=time.time()
     self.minutes_counter=0
     self.m=Monajat() # you may pass width like 20 chars
     self.load_conf()
@@ -283,6 +330,8 @@ class applet(object):
     self.conf['show_merits']='1'
     self.conf['lang']=self.m.lang
     self.conf['minutes']='10'
+    self.conf['note_b_pt_min']='10'
+    self.conf['note_b_pt']='1'
 
   def conf_to_prayer_args(self):
     kw={}
@@ -340,6 +389,10 @@ class applet(object):
     except ValueError: self.conf['minutes']=0
     try: self.conf['show_merits']=int(self.conf['show_merits']) 
     except ValueError: self.conf['show_merits']=1
+    try: self.conf['note_b_pt']=int(float(self.conf['note_b_pt']))
+    except ValueError: self.conf['note_b_pt']=1
+    try: self.conf['note_b_pt_min']=int(float(self.conf['note_b_pt_min']))
+    except ValueError: self.conf['note_b_pt_min']=1
     self.m.set_lang(self.conf['lang'])
     self.m.clear()
 
@@ -357,6 +410,8 @@ class applet(object):
     self.conf['show_merits']=int(self.conf_dlg.show_merits.get_active())
     self.conf['lang']=self.conf_dlg.lang.get_active_text()
     self.conf['minutes']=int(self.conf_dlg.timeout.get_value())
+    self.conf['note_b_pt_min']=int(self.conf_dlg.noteb4_t.get_value())
+    self.conf['note_b_pt']=int(self.conf_dlg.noteb4_b.get_active())
     m, p=self.conf_dlg.cities_tree.get_selection().get_selected_rows()
     if p:
       city_id=m[p[0]][2]
@@ -375,15 +430,28 @@ class applet(object):
     return False
 
   def az_timed_cb(self, *args):
+    checktime=time.time()-self.chngbody
+    if checktime < 0: checktime=100
+    if checktime < 20: return True
+    #FIXME: change body after 20-30 sec 
+    self.m.go_forward()
+    body=self.render_body(self.m.go_back())
+    self.notify.set_body=body
+    try: MKNOTE=int(self.conf['note_b_pt'])
+    except: MKNOTE=1
+    try: NOTEMIN=int(self.conf['note_b_pt_min'])
+    except: NOTEMIN=10
     tt=self.get_nextprayer(self.prayer.get_prayers())
     td=tt[1]
     if td['hours']>0: return True
-    if td['minutes']>=5: return True
-    if td['minutes']==4 and td['seconds']==59 or td['minutes']==0 and td['seconds']==1:
+
+    if td['minutes']>NOTEMIN: return True
+    if td['minutes']==NOTEMIN and td['seconds']==0 and MKNOTE or td['minutes']==0 and td['seconds']==1:
       timeNP,isnear, istime = self.nextprayer_note(tt)
       self.notify.set_property('body', timeNP)
       self.notify.show()
-    if td['minutes']==0 and td['seconds']==1 and tt[1]!=1:
+      self.chngbody=time.time()
+    if td['minutes']==0 and td['seconds']==1 and tt[0]!=1:
       #self.sound_file_n='/media/DATA/ojuba/ojprojects/monajat/b/monajat-data/sample.ogg'
       #FIXME: make sure file name is gst supported
       self.sound_player.set_file_name(self.sound_file_n)
@@ -429,6 +497,7 @@ class applet(object):
     if not isnear: body+=timeNP
     else: body=timeNP+body
     self.notify.set_property('body', body)
+    return body
 
   def dbus_cb(self, *args):
     self.minutes_counter=1
