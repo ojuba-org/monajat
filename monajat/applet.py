@@ -20,7 +20,8 @@ import gst
 # "resident"
 
 class soundplayer:
-  def __init__(self, fn=""):
+  def __init__(self, fn="", change_play_status=None):
+    self.change_play_status=change_play_status
     self.player = gst.element_factory_make("playbin2", "player")
     if os.path.isfile(fn):
       self.player.set_property("uri", "file://" + fn)
@@ -40,7 +41,10 @@ class soundplayer:
     
   def on_message(self, bus, message):
     t = message.type
-    if t == gst.MESSAGE_EOS:self.player.set_state(gst.STATE_NULL)
+    print t
+    if t == gst.MESSAGE_EOS:
+      if self.change_play_status: self.change_play_status()
+      self.player.set_state(gst.STATE_NULL)
     elif t == gst.MESSAGE_ERROR:
       self.player.set_state(gst.STATE_NULL)
       err, debug = message.parse_error()
@@ -113,7 +117,7 @@ class ConfigDlg(gtk.Dialog):
     scroll.add(tree)
     vb.pack_start(scroll, True, True, 2)
 
-    self.player = soundplayer()
+    self.player = soundplayer('', self.change_play_status)
     vb=gtk.VBox()
     tabs.append_page(vb, gtk.Label(_('Notification')))
     hb=gtk.HBox()
@@ -129,7 +133,7 @@ class ConfigDlg(gtk.Dialog):
     ff.set_name(_('All files'))
     ff.add_pattern('*')
     b.add_filter(ff)
-    pb=gtk.Button(_('Play'))
+    self.play_b=pb=gtk.Button(_('Play'))
     pb.connect('clicked', self.play_cb)
     hb.pack_end(pb, False, False, 2)
     hb.pack_end(b, True, True, 5)
@@ -145,20 +149,27 @@ class ConfigDlg(gtk.Dialog):
     
     self._fill_cities()
 
+  def change_play_status(self, status=None):
+    if status==None: status=self.player.player.get_state()
+    if status==gst.STATE_PLAYING:
+      self.sound_file.set_sensitive(False)
+      self.play_b.set_property('label', _('Stop'))
+    else:
+      self.sound_file.set_sensitive(True)
+      self.play_b.set_property('label', _('Play'))
+
   def play_cb(self, b):
     fn=self.sound_file.get_filename()
     if not fn: fn=''
     if b.get_label() == _('Play'):
       if not os.path.isfile(fn): return
+      self.change_play_status(gst.STATE_PLAYING)
       self.player.set_file_name(fn)
       self.player.play()
-      self.sound_file.set_sensitive(False)
-      b.set_property('label', _('Stop'))
     else:
+      self.change_play_status(gst.STATE_NULL)
       self.player.stop()
-      self.sound_file.set_sensitive(True)
-      b.set_property('label', _('Play'))
-
+      self.change_play_status(gst.STATE_PLAYING)
 
   def _city_search_cb(self, e):
     # FIXME: if same as last successful search text don't update first_match_path
