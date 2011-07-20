@@ -436,7 +436,7 @@ class applet(object):
     #FIXME: change body after 20-30 sec 
     self.m.go_forward()
     body=self.render_body(self.m.go_back())
-    self.notify.set_body=body
+    self.notify.set_property('body', body)
     try: MKNOTE=int(self.conf['note_b_pt'])
     except: MKNOTE=1
     try: NOTEMIN=int(self.conf['note_b_pt_min'])
