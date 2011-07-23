@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: monajat\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-16 22:38+0300\n"
+"POT-Creation-Date: 2011-07-23 15:58+0300\n"
 "PO-Revision-Date: 2010-10-01 18:29+0000\n"
 "Last-Translator: Diogo Lavareda <diogolavareda9@hotmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
@@ -18,94 +18,153 @@ msgstr ""
 "X-Launchpad-Export-Date: 2010-10-02 04:58+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: monajat/applet.py:29
+#: monajat/applet.py:67
 msgid "Monajat Configuration"
 msgstr ""
 
-#: monajat/applet.py:30
+#: monajat/applet.py:68
 msgid "Cancel"
 msgstr ""
 
-#: monajat/applet.py:31
+#: monajat/applet.py:69
 msgid "Save"
 msgstr ""
 
-#: monajat/applet.py:35
+#: monajat/applet.py:73
 msgid "Generic"
 msgstr ""
 
-#: monajat/applet.py:36
+#: monajat/applet.py:74
 msgid "Auto start"
 msgstr ""
 
-#: monajat/applet.py:39
+#: monajat/applet.py:77
 msgid "Show merits"
 msgstr ""
 
-#: monajat/applet.py:44
+#: monajat/applet.py:82
 #, fuzzy
 msgid "Language:"
 msgstr "Idioma"
 
-#: monajat/applet.py:55
+#: monajat/applet.py:93
 msgid "Time:"
 msgstr ""
 
-#: monajat/applet.py:60
-msgid "Minutes"
-msgstr ""
+#: monajat/applet.py:98 monajat/applet.py:154
+#, fuzzy
+msgid "minutes"
+msgstr "Tempo em minutos"
 
-#: monajat/applet.py:63
+#: monajat/applet.py:101
 msgid "Location"
 msgstr ""
 
-#: monajat/applet.py:167 monajat/applet.py:181 monajat/applet.py:357
-msgid "Monajat"
+#: monajat/applet.py:126
+msgid "Notification"
 msgstr ""
 
-#: monajat/applet.py:169
-msgid "previous"
-msgstr "anterior"
-
-#: monajat/applet.py:170
-msgid "next"
-msgstr "próximo"
-
-#: monajat/applet.py:171
-msgid "copy"
-msgstr "copiar"
-
-#: monajat/applet.py:308 monajat/applet.py:311
-msgid "Its Merits"
+#: monajat/applet.py:129
+msgid "Sound:"
 msgstr ""
 
-#: monajat/applet.py:360
-msgid "Monajat supplications"
+#: monajat/applet.py:130
+msgid "Choose Athan media file"
 msgstr ""
 
-#: monajat/applet.py:391
+#: monajat/applet.py:133
+msgid "Sound Files"
+msgstr ""
+
+#: monajat/applet.py:138
+msgid "All files"
+msgstr ""
+
+#: monajat/applet.py:141 monajat/applet.py:165 monajat/applet.py:170
+msgid "Play"
+msgstr ""
+
+#: monajat/applet.py:148
+msgid "Notify before"
+msgstr ""
+
+#: monajat/applet.py:162
+msgid "Stop"
+msgstr ""
+
+#: monajat/applet.py:255
 msgid "Fajr"
 msgstr ""
 
-#: monajat/applet.py:391
+#: monajat/applet.py:255
+msgid "Sunrise"
+msgstr ""
+
+#: monajat/applet.py:255
 msgid "Dhuhr"
 msgstr ""
 
-#: monajat/applet.py:391
+#: monajat/applet.py:255
 msgid "Asr"
 msgstr ""
 
-#: monajat/applet.py:391
+#: monajat/applet.py:255
 msgid "Maghrib"
 msgstr ""
 
-#: monajat/applet.py:391
+#: monajat/applet.py:255
 msgid "Isha'a"
 msgstr ""
 
-#: monajat/applet.py:425
-msgid "Configure"
+#: monajat/applet.py:268 monajat/applet.py:282 monajat/applet.py:522
+msgid "Monajat"
 msgstr ""
 
-#~ msgid "Time in minutes"
-#~ msgstr "Tempo em minutos"
+#: monajat/applet.py:270
+msgid "previous"
+msgstr "anterior"
+
+#: monajat/applet.py:271
+msgid "next"
+msgstr "próximo"
+
+#: monajat/applet.py:272
+msgid "copy"
+msgstr "copiar"
+
+#: monajat/applet.py:405
+#, python-format
+msgid "It's now time for %s prayer"
+msgstr ""
+
+#: monajat/applet.py:449
+#, python-format
+msgid "%(hours)d hours till %(prayer)s prayer"
+msgstr ""
+
+#: monajat/applet.py:451
+#, python-format
+msgid "%(hours)d hours and %(minutes)d minutes till %(prayer)s prayer"
+msgstr ""
+
+#: monajat/applet.py:453
+#, python-format
+msgid "less than %(minutes)d minutes till %(prayer)s prayer"
+msgstr ""
+
+#: monajat/applet.py:455
+#, python-format
+msgid "less than a minute till %(prayer)s prayer"
+msgstr ""
+
+#: monajat/applet.py:465 monajat/applet.py:468
+msgid "Its Merits"
+msgstr ""
+
+#: monajat/applet.py:525
+msgid "Monajat supplications"
+msgstr ""
+
+#: monajat/applet.py:593
+msgid "Configure"
+msgstr ""
