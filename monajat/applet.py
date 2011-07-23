@@ -439,6 +439,7 @@ class applet(object):
   def hide_cb(self, w, *args): w.hide(); return True
 
   def fuzzy_delta(self):
+    if self.next_athan_i<0: return ""
     t=max(int(self.next_athan_delta),0)
     d={"prayer":self.ptnames[self.next_athan_i]}
     d['hours']=t/3600
