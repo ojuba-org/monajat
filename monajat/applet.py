@@ -538,6 +538,7 @@ class applet(object):
     self.about_dlg.set_website_label("Monajat web site")
     self.about_dlg.set_authors(["Fadi al-katout <cutout33@gmail.com>",
                                 "Muayyad Saleh Alsadi <alsadi@ojuba.org>",
+                                "Ehab El-Gedawy <ehabsas@gmail.com>",
                                 "Mahyuddin Susanto <udienz@ubuntu.com>",
                                 "عبدالرحيم دوبيلار <abdulrahiem@sabi.li>",
                                 "أحمد المحمودي (Ahmed El-Mahmoudy) <aelmahmoudy@sabily.org>"])
