@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: monajat 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-23 15:58+0300\n"
+"POT-Creation-Date: 2011-07-23 16:03+0300\n"
 "PO-Revision-Date: 2009-12-17 08:12+0000\n"
 "Last-Translator: Muayyad Alsadi <Unknown>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -51,7 +51,6 @@ msgid "Time:"
 msgstr "الوقت:"
 
 #: monajat/applet.py:98 monajat/applet.py:154
-#, fuzzy
 msgid "minutes"
 msgstr "دقيقة"
 
@@ -60,37 +59,36 @@ msgid "Location"
 msgstr "الموقع"
 
 #: monajat/applet.py:126
-#, fuzzy
 msgid "Notification"
-msgstr "الموقع"
+msgstr "التنبيه"
 
 #: monajat/applet.py:129
 msgid "Sound:"
-msgstr ""
+msgstr "الصوت:"
 
 #: monajat/applet.py:130
 msgid "Choose Athan media file"
-msgstr ""
+msgstr "اختر ملف الأذان"
 
 #: monajat/applet.py:133
 msgid "Sound Files"
-msgstr ""
+msgstr "ملفات الصوت"
 
 #: monajat/applet.py:138
 msgid "All files"
-msgstr ""
+msgstr "كل الملفات"
 
 #: monajat/applet.py:141 monajat/applet.py:165 monajat/applet.py:170
 msgid "Play"
-msgstr ""
+msgstr "تشغيل"
 
 #: monajat/applet.py:148
 msgid "Notify before"
-msgstr ""
+msgstr "التنبيه قبل"
 
 #: monajat/applet.py:162
 msgid "Stop"
-msgstr ""
+msgstr "توقيف"
 
 #: monajat/applet.py:255
 msgid "Fajr"
@@ -98,7 +96,7 @@ msgstr "الفجر"
 
 #: monajat/applet.py:255
 msgid "Sunrise"
-msgstr ""
+msgstr "الشروق"
 
 #: monajat/applet.py:255
 msgid "Dhuhr"
@@ -135,27 +133,27 @@ msgstr "نسخ"
 #: monajat/applet.py:405
 #, python-format
 msgid "It's now time for %s prayer"
-msgstr ""
+msgstr "حان الآن وقت أذان %s"
 
 #: monajat/applet.py:449
 #, python-format
 msgid "%(hours)d hours till %(prayer)s prayer"
-msgstr ""
+msgstr "بقي %(hours)d ساعة على أذان %(prayer)s"
 
 #: monajat/applet.py:451
 #, python-format
 msgid "%(hours)d hours and %(minutes)d minutes till %(prayer)s prayer"
-msgstr ""
+msgstr "بقي %(hours)d ساعة و %(minutes)d دقيقة على أذان %(prayer)s"
 
 #: monajat/applet.py:453
 #, python-format
 msgid "less than %(minutes)d minutes till %(prayer)s prayer"
-msgstr ""
+msgstr "بقي أقل من %(minutes)d دقيقة على أذان %(prayer)s"
 
 #: monajat/applet.py:455
 #, python-format
 msgid "less than a minute till %(prayer)s prayer"
-msgstr ""
+msgstr "بقي أقل من دقيقة على أذان %(prayer)s"
 
 #: monajat/applet.py:465 monajat/applet.py:468
 msgid "Its Merits"
@@ -168,6 +166,3 @@ msgstr "برنامج الأذكار مناجاة"
 #: monajat/applet.py:593
 msgid "Configure"
 msgstr "إعداد"
-
-#~ msgid "Time in minutes"
-#~ msgstr "الوقت بالدقائق"
