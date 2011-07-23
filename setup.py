@@ -9,7 +9,7 @@ import os, sys
 locales=map(lambda i: ('share/'+i,[''+i+'/monajat.mo',]),glob('locale/*/LC_MESSAGES'))
 # data files
 data_files=[
-  ('share/monajat', ['monajat-data/data.db', 'monajat-data/cities.db', 'monajat-data/monajat.svg'] ),
+  ('share/monajat', ['monajat-data/data.db', 'monajat-data/cities.db', 'monajat-data/athan.ogg', 'monajat-data/monajat.svg'] ),
   ('/etc/xdg/autostart',['monajat-autostart.desktop']),
 ]
 data_files.extend(locales)

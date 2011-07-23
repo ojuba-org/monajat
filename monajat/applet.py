@@ -3,7 +3,7 @@ import os, os.path
 import itl
 from monajat import Monajat
 from utils import init_dbus
-import gettext
+import locale, gettext
 
 import glib
 import gtk
@@ -19,34 +19,38 @@ import gst
 # in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
 # "resident"
 
-class soundplayer:
-  def __init__(self, fn="", change_play_status=None):
+class SoundPlayer:
+  def __init__(self, fn=None, change_play_status=None):
+    if not fn: fn=""
+    self.fn=fn
     self.change_play_status=change_play_status
-    self.player = gst.element_factory_make("playbin2", "player")
-    if os.path.isfile(fn):
-      self.player.set_property("uri", "file://" + fn)
-    bus = self.player.get_bus()
+    self.gst_player = gst.element_factory_make("playbin2", "player")
+    self.gst_player.set_property("uri", "file://" + fn)
+    bus = self.gst_player.get_bus()
     bus.add_signal_watch()
     bus.connect("message", self.on_message)
     
   def play(self):
-    self.player.set_state(gst.STATE_PLAYING)
+    fn=self.fn
+    if fn and os.path.isfile(fn):
+      self.gst_player.set_state(gst.STATE_PLAYING)
   
   def stop(self):
-    self.player.set_state(gst.STATE_NULL)
+    self.gst_player.set_state(gst.STATE_NULL)
   
-  def set_file_name(self,fn):
-    if not os.path.isfile(fn): return False
-    self.player.set_property("uri", "file://" + fn)
+  def set_filename(self,fn):
+    if not fn: fn=""
+    self.fn=fn
+    self.gst_player.set_property("uri", "file://" + fn)
     
   def on_message(self, bus, message):
     t = message.type
     print t
     if t == gst.MESSAGE_EOS:
       if self.change_play_status: self.change_play_status()
-      self.player.set_state(gst.STATE_NULL)
+      self.gst_player.set_state(gst.STATE_NULL)
     elif t == gst.MESSAGE_ERROR:
-      self.player.set_state(gst.STATE_NULL)
+      self.gst_player.set_state(gst.STATE_NULL)
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 
@@ -91,7 +95,7 @@ class ConfigDlg(gtk.Dialog):
     self.timeout = b = gtk.SpinButton(gtk.Adjustment(5, 0, 90, 5, 5))
     b.set_value(self.applet.conf['minutes'])
     hb.pack_start(b, False, False, 2)
-    hb.pack_start(gtk.Label(_('Minutes')), False, False, 2)
+    hb.pack_start(gtk.Label(_('minutes')), False, False, 2)
 
     vb=gtk.VBox()
     tabs.append_page(vb, gtk.Label(_('Location')))
@@ -117,13 +121,14 @@ class ConfigDlg(gtk.Dialog):
     scroll.add(tree)
     vb.pack_start(scroll, True, True, 2)
 
-    self.player = soundplayer('', self.change_play_status)
+    self.sound_player = SoundPlayer(self.applet.conf['athan_media_file'], self.change_play_status)
     vb=gtk.VBox()
     tabs.append_page(vb, gtk.Label(_('Notification')))
     hb=gtk.HBox()
     vb.pack_start(hb, False, True, 3)
     hb.pack_start(gtk.Label(_('Sound:')), False, True, 2)
-    self.sound_file = b = gtk.FileChooserButton('Choosefile')
+    self.sound_file = b = gtk.FileChooserButton(_('Choose Athan media file'))
+    self.sound_file.set_filename(self.applet.conf['athan_media_file'])
     ff=gtk.FileFilter()
     ff.set_name(_('Sound Files'))
     ff.add_pattern('*.ogg')
@@ -140,17 +145,18 @@ class ConfigDlg(gtk.Dialog):
     
     hb = gtk.HBox()
     vb.pack_start(hb, False, False, 3)
-    self.noteb4_b = b = gtk.CheckButton(_("Notification before time"))
-    self.noteb4_t = t = gtk.SpinButton(gtk.Adjustment(5, 5, 20, 5, 5))
-    b.set_active(self.applet.conf['note_b_pt'])
-    t.set_value(self.applet.conf['note_b_pt_min'])
+    self.notify_before_b = b = gtk.CheckButton(_("Notify before"))
+    self.notify_before_t = t = gtk.SpinButton(gtk.Adjustment(5, 5, 20, 5, 5))
+    b.set_active(self.applet.conf['notify_before_min']!=0)
+    t.set_value(self.applet.conf['notify_before_min'])
     hb.pack_start(b,True,True,2)
     hb.pack_start(t,False,False,2)
+    hb.pack_start(gtk.Label(_('minutes')),False,False,2)
     
     self._fill_cities()
 
   def change_play_status(self, status=None):
-    if status==None: status=self.player.player.get_state()
+    if status==None: status=self.sound_player.gst_player.get_state()
     if status==gst.STATE_PLAYING:
       self.sound_file.set_sensitive(False)
       self.play_b.set_property('label', _('Stop'))
@@ -164,12 +170,11 @@ class ConfigDlg(gtk.Dialog):
     if b.get_label() == _('Play'):
       if not os.path.isfile(fn): return
       self.change_play_status(gst.STATE_PLAYING)
-      self.player.set_file_name(fn)
-      self.player.play()
+      self.sound_player.set_filename(fn)
+      self.sound_player.play()
     else:
       self.change_play_status(gst.STATE_NULL)
-      self.player.stop()
-      self.change_play_status(gst.STATE_PLAYING)
+      self.sound_player.stop()
 
   def _city_search_cb(self, e):
     # FIXME: if same as last successful search text don't update first_match_path
@@ -234,14 +239,17 @@ class applet(object):
     self.chngbody=time.time()
     self.minutes_counter=0
     self.m=Monajat() # you may pass width like 20 chars
+    self.sound_player=SoundPlayer()
     self.load_conf()
     self.prayer_items=[]
-    self.sound_player=soundplayer()
-    #TODO: mke this configurable
-    self.sound_file_n=os.path.join(self.m.get_prefix(),'sample.ogg')
-    #print self.sound_file_n
     kw=self.conf_to_prayer_args()
     self.prayer=itl.PrayerTimes(**kw)
+    l=filter(lambda i: i.startswith('ar_') and "_" in i and '.' not in i, locale.locale_alias.keys())
+    if l:
+      l,c=l[0].split('_',1)
+      l=l+"_"+c.upper()+".UTF-8"
+      os.environ['LC_MESSAGES']=l
+      locale.setlocale(locale.LC_MESSAGES, l)
     ld=os.path.join(self.m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
     self.ptnames=[_("Fajr"), _("Sunrise"), _("Dhuhr"), _("Asr"), _("Maghrib"), _("Isha'a")]
@@ -274,58 +282,14 @@ class applet(object):
     self.statusicon.set_title(_("Monajat"))
     self.statusicon.set_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
 
-    glib.timeout_add_seconds(10, self.start_timer)
-
-  def get_nextprayer(self,pt,newday=False):
-    #self.prayer.get_prayers()
-    #for p,t in zip(range(0,5),pt)
-    ##get_date_prayer
-    s=time.localtime()
-    todaytime = '%i-%i-%i 00:00:00' %(s.tm_year,s.tm_mon,s.tm_mday)
-    tdict={}
-    k=0
-    for t in pt:
-      timst = (t.hour*3600)+(t.minute*60)+(t.second)
-      if newday: timst += 24*3600
-      timst+=int(time.mktime(time.strptime(todaytime, '%Y-%m-%d %H:%M:%S')))
-      rt=timst-time.time()
-      td=int(rt)
-      ptime={"hours":td/3600, "minutes": (td/60) % 60, "seconds": td % 60}
-      tdict[k]=[ptime, rt]
-      k+=1
-    ntimes=dict(filter(lambda (a,b): b[1] >=0, tdict.items()))
-    if ntimes: k=min(ntimes,key=cmp_to_key(lambda x,c: cmp(tdict[x],tdict[c])))
-    else: return self.get_nextprayer(self.prayer.get_prayers(False),True) 
-    #self.prayer.get_date_prayer(s.tm_year,s.tm_mon,s.tm_mday+1))
-    #print dict(filter(lambda (a,b): b[1] >=0, tdict.items()))
-    #print k
-    return k,tdict[k][0]
-    
-  def nextprayer_note(self, tdict):
-    k, tdict = tdict
-    if tdict['hours']>0:
-      ret=_("""\n\n<b>Remaining time to ( %s ): %02d hours and %02d minutes</b>""") % (self.ptnames[k],tdict['hours'], tdict['minutes'])
-      istime=False
-      isnear=False
-    else:
-      if tdict['minutes']>=5:
-        ret=_("""\n\n<b>Remaining time to ( %s ): %02d minutes.</b>""") % (self.ptnames[k],tdict['minutes'])
-        istime=False
-        isnear=False
-      elif tdict['minutes']>0:
-        ret=_("""<b>Remaining time to ( %s ): %02d minutes.</b>\n\n""") % (self.ptnames[k], tdict['minutes'])
-        istime=False
-        isnear=True
-      else:
-        if tdict['seconds']>1:
-          ret=_("""<b>Remaining time to ( %s ): less than a minute.</b>\n\n""") % (self.ptnames[k])
-          istime=False
-          isnear=True
-        else:
-          ret=_("""<b>It's now time to ( %s ).</b>\n\n""") % (self.ptnames[k])
-          istime=True
-          isnear=True
-    return ret, isnear, istime
+    self.notif_last_athan=-1
+    self.next_athan_delta=-1
+    self.next_athan_i=-1
+    self.last_athan=-1
+    self.last_time=0
+    self.first_notif_done=False
+    self.start_time=time.time()
+    glib.timeout_add_seconds(1, self.timer_cb)
 
   def config_cb(self, *a):
     if self.conf_dlg==None:
@@ -341,8 +305,8 @@ class applet(object):
     self.conf['show_merits']='1'
     self.conf['lang']=self.m.lang
     self.conf['minutes']='10'
-    self.conf['note_b_pt_min']='10'
-    self.conf['note_b_pt']='1'
+    self.conf['athan_media_file']=os.path.join(self.m.prefix, 'athan.ogg')
+    self.conf['notify_before_min']='10'
 
   def conf_to_prayer_args(self):
     kw={}
@@ -395,15 +359,15 @@ class applet(object):
       except ValueError: del self.conf['city_id']
       except TypeError: del self.conf['city_id']
       else: self.conf['city_id']=c_id
+    # set athan media file exists
+    self.sound_player.set_filename(self.conf['athan_media_file'])
     # fix types
     try: self.conf['minutes']=math.ceil(float(self.conf['minutes'])/5.0)*5
     except ValueError: self.conf['minutes']=0
     try: self.conf['show_merits']=int(self.conf['show_merits']) 
     except ValueError: self.conf['show_merits']=1
-    try: self.conf['note_b_pt']=int(float(self.conf['note_b_pt']))
-    except ValueError: self.conf['note_b_pt']=1
-    try: self.conf['note_b_pt_min']=int(float(self.conf['note_b_pt_min']))
-    except ValueError: self.conf['note_b_pt_min']=1
+    try: self.conf['notify_before_min']=int(float(self.conf['notify_before_min']))
+    except ValueError: self.conf['notify_before_min']=10
     self.m.set_lang(self.conf['lang'])
     self.m.clear()
 
@@ -411,18 +375,18 @@ class applet(object):
     kw=self.conf_to_prayer_args()
     self.prayer=itl.PrayerTimes(**kw)
     self.update_prayer()
+    self.sound_player.set_filename(self.conf['athan_media_file'])
     self.m.clear()
     self.m.set_lang(self.conf['lang'])
     self.render_body(self.m.go_forward())
-
 
   def save_conf(self):
     self.conf['cities_db_ver']=self.m.cities_db_ver
     self.conf['show_merits']=int(self.conf_dlg.show_merits.get_active())
     self.conf['lang']=self.conf_dlg.lang.get_active_text()
     self.conf['minutes']=int(self.conf_dlg.timeout.get_value())
-    self.conf['note_b_pt_min']=int(self.conf_dlg.noteb4_t.get_value())
-    self.conf['note_b_pt']=int(self.conf_dlg.noteb4_b.get_active())
+    self.conf['athan_media_file']=self.conf_dlg.sound_file.get_filename()
+    self.conf['notify_before_min']=int(self.conf_dlg.notify_before_b.get_active() and self.conf_dlg.notify_before_t.get_value())
     m, p=self.conf_dlg.cities_tree.get_selection().get_selected_rows()
     if p:
       city_id=m[p[0]][2]
@@ -434,54 +398,64 @@ class applet(object):
     except OSError: pass
     self.apply_conf()
 
-  def start_timer(self, *args):
-    glib.timeout_add_seconds(60, self.timed_cb)
-    glib.timeout_add_seconds(1, self.az_timed_cb)
-    self.next_cb()
+  def athan_show_notif(self):
+    self.last_time=time.time()
+    self.first_notif_done=True
+    s=self.ptnames[self.last_athan]
+    self.notify.set_property('body', _('''It's now time for %s prayer''') % s)
+    self.notify.show()
+
+  def athan_notif_cb(self):
+    i, t, dt=self.prayer.get_next_time_stamp()
+    if i<0: return False
+    dt=max(dt, 0)
+    i=i%6
+    self.next_athan_delta=dt
+    self.next_athan_i=i
+    if dt<30 and i!=self.last_athan:
+      print "it's time for prayer number:", i
+      self.last_athan=i
+      self.sound_player.play()
+      self.athan_show_notif()
+      return True
     return False
 
-  def az_timed_cb(self, *args):
-    checktime=time.time()-self.chngbody
-    if checktime < 0: checktime=100
-    if checktime < 20: return True
-    #FIXME: change body after 20-30 sec 
-    self.m.go_forward()
-    body=self.render_body(self.m.go_back())
-    self.notify.set_property('body', body)
-    try: MKNOTE=int(self.conf['note_b_pt'])
-    except: MKNOTE=1
-    try: NOTEMIN=int(self.conf['note_b_pt_min'])
-    except: NOTEMIN=10
-    tt=self.get_nextprayer(self.prayer.get_prayers())
-    td=tt[1]
-    if td['hours']>0: return True
-
-    if td['minutes']>NOTEMIN: return True
-    if td['minutes']==NOTEMIN and td['seconds']==0 and MKNOTE or td['minutes']==0 and td['seconds']==1:
-      timeNP,isnear, istime = self.nextprayer_note(tt)
-      self.notify.set_property('body', timeNP)
-      self.notify.show()
-      self.chngbody=time.time()
-    if td['minutes']==0 and td['seconds']==1 and tt[0]!=1:
-      #self.sound_file_n='/media/DATA/ojuba/ojprojects/monajat/b/monajat-data/sample.ogg'
-      #FIXME: make sure file name is gst supported
-      self.sound_player.set_file_name(self.sound_file_n)
-      self.sound_player.play()
-    #print tt,self.ptnames
-    return True
-    
-  def timed_cb(self, *args):
+  def timer_cb(self, *args):
+    dt=int(time.time()-self.last_time)
     if self.prayer.update():
       self.update_prayer()
-    if not self.conf['minutes']: return True
-    if self.minutes_counter % self.conf['minutes'] == 0:
-      self.minutes_counter=1
+    if self.athan_notif_cb(): return True
+    if not self.first_notif_done:
+      if int(time.time()-self.start_time)>=10:
+        self.next_cb()
+      return True
+    if self.conf['notify_before_min'] and self.next_athan_delta<=self.conf['notify_before_min']*60 and self.next_athan_i!=self.notif_last_athan:
+      self.notif_last_athan=self.next_athan_i
       self.next_cb()
-    else:
-      self.minutes_counter+=1
+    elif self.conf['minutes'] and dt>=self.conf['minutes']*60:
+      self.next_cb()
     return True
 
   def hide_cb(self, w, *args): w.hide(); return True
+
+  def fuzzy_delta(self):
+    t=max(int(self.next_athan_delta),0)
+    d={"prayer":self.ptnames[self.next_athan_i]}
+    d['hours']=t/3600
+    t%=3600
+    d['minutes']=t/60
+    if d["hours"]:
+      if d["minutes"]<5:
+        r=_("""%(hours)d hours till %(prayer)s prayer""") % d
+      else:
+        r=_("""%(hours)d hours and %(minutes)d minutes till %(prayer)s prayer""") % d
+    elif d["minutes"]>=2:
+      r=_("""less than %(minutes)d minutes till %(prayer)s prayer""") % d
+    else:
+      r=_("""less than a minute till %(prayer)s prayer""") % d
+    if "body-markup" in self.notifycaps:
+      return "<b>%s</b>\n\n" % cgi.escape(r)
+    return "%s\n\n" % r
 
   def render_body(self, m):
     merits=m['merits']
@@ -504,9 +478,10 @@ class applet(object):
         L.append(u"""<a href='%s'>%s</a>""" % (url,t))
       l=u"\n\n".join(L)
       body+=u"\n\n"+l
-    timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
-    if not isnear: body+=timeNP
-    else: body=timeNP+body
+    body=self.fuzzy_delta()+body
+    #timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
+    #if not isnear: body+=timeNP
+    #else: body=timeNP+body
     self.notify.set_property('body', body)
     return body
 
@@ -516,6 +491,8 @@ class applet(object):
     return 0
 
   def next_cb(self,*args):
+    self.last_time=time.time()
+    self.first_notif_done=True
     try: self.notify.close()
     except glib.GError: pass
     self.render_body(self.m.go_forward())
@@ -523,6 +500,7 @@ class applet(object):
     return True
 
   def prev_cb(self, *args):
+    self.last_time=time.time()
     try: self.notify.close()
     except glib.GError: pass
     self.render_body(self.m.go_back())

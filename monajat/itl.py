@@ -201,6 +201,8 @@ class PrayerTimes:
     """
     self.location=Location()
     self.date=Date()
+    self.stamps=[]
+    self.stamp_date=Date()
     self.method=Method()
     self.ptList=(Prayer*6)()
     self.location.degreeLong=lon
@@ -221,7 +223,8 @@ class PrayerTimes:
     self.location.seaLevel = alt
     self.location.pressure = pressure
     self.location.temperature= temp
-    self.get_prayers(False)
+    # self.get_prayers(False) not needed as implied by next line
+    self.get_prayer_time_stamps(False)
 
   def set_method(self, n):
     getMethod(n, self.method)
@@ -236,6 +239,23 @@ class PrayerTimes:
   def get_prayers(self, cache=True):
     if cache and not self.date.update(): return self.ptList
     return getPrayerTimes(self.location, self.method, self.date, self.ptList)
+
+  def get_prayer_time_stamps(self, cache=True):
+    if cache and self.stamps and not self.stamp_date.update(): return self.stamps
+    t=int(time.time())
+    d=time.localtime()
+    t-=d.tm_hour*3600+d.tm_min*60+d.tm_sec
+    self.stamps=map(lambda p: t+p.hour*3600+p.minute*60+p.second, self.get_prayers(cache))
+    self.stamps.append(self.stamps[0]+86400)
+    return self.stamps
+
+  def get_next_time_stamp(self, delta=30.0):
+    t=time.time()
+    l=self.get_prayer_time_stamps()
+    for i,j in enumerate(l):
+      if i==1: continue
+      if t-j<=delta: return i, j, j-t
+    return -1, -1, -1
 
   def get_date_prayers(self, y, m, d, ptList=None):
     date=Date()
