@@ -1,7 +1,7 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.6.0
+Version: 2.6.1
 Release: 1%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2

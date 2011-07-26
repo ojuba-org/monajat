@@ -249,7 +249,7 @@ class PrayerTimes:
     self.stamps.append(self.stamps[0]+86400)
     return self.stamps
 
-  def get_next_time_stamp(self, delta=30.0):
+  def get_next_time_stamp(self, delta=0.0):
     t=time.time()
     l=self.get_prayer_time_stamps()
     for i,j in enumerate(l):
