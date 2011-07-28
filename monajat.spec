@@ -44,7 +44,7 @@ Group: System Environment/Base
 BuildArch: noarch
 Requires: %{name}-python
 # TODO: is it better to say gnome-python2-extras ?
-Requires: pygtk2, notify-python
+Requires: pygtk2, notify-python, desktop-notification-daemon
 %description applet
 Monajat Islamic Supplications
 
