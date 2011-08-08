@@ -32,7 +32,7 @@ This is the database used by monajat.
 Group: System Environment/Base
 Summary: Monajat Islamic Supplications
 BuildArch: noarch
-Requires: python, setuptool, %{name}-database
+Requires: python, %{name}-database, libitl
 %description python
 Monajat Islamic Supplications
 
