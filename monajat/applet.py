@@ -479,7 +479,11 @@ class applet(object):
         L.append(u"""<a href='%s'>%s</a>""" % (url,t))
       l=u"\n\n".join(L)
       body+=u"\n\n"+l
-    body=self.fuzzy_delta()+body
+    # if we are close to time show it before supplication
+    if self.next_athan_delta>=0 and self.next_athan_delta<=600:
+      body=self.fuzzy_delta()+body
+    else:
+      body=body+"\n\n"+self.fuzzy_delta()
     #timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
     #if not isnear: body+=timeNP
     #else: body=timeNP+body
