@@ -54,6 +54,12 @@ class SoundPlayer:
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 
+normalize_tb={
+65: 97, 66: 98, 67: 99, 68: 100, 69: 101, 70: 102, 71: 103, 72: 104, 73: 105, 74: 106, 75: 107, 76: 108, 77: 109, 78: 110, 79: 111, 80: 112, 81: 113, 82: 114, 83: 115, 84: 116, 85: 117, 86: 118, 87: 119, 88: 120, 89: 121, 90: 122,
+1600: None, 1569: 1575, 1570: 1575, 1571: 1575, 1572: 1575, 1573: 1575, 1574: 1575,
+1577: 1607, # teh marboota ->  haa
+1611: None, 1612: None, 1613: None, 1614: None, 1615: None, 1616: None, 1617: None, 1618: None, 1609: 1575}
+
 
 class ConfigDlg(gtk.Dialog):
   def __init__(self, applet):
@@ -106,13 +112,13 @@ class ConfigDlg(gtk.Dialog):
     e.connect('activate', self._city_search_cb)
     hb.pack_start(e, False, False, 2)
     
-    s = gtk.TreeStore(str, bool, int) # label, is_city, id
+    s = gtk.TreeStore(str, bool, int, str) # label, is_city, id, normalized label
     self.cities_tree=tree=gtk.TreeView(s)
     col=gtk.TreeViewColumn('Location', gtk.CellRendererText(), text=0)
     col.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
     tree.insert_column(col, -1)
     tree.set_enable_search(True)
-    tree.set_search_column(0)
+    tree.set_search_column(3)
     tree.set_headers_visible(False)
     tree.set_tooltip_column(0)
     
@@ -179,7 +185,9 @@ class ConfigDlg(gtk.Dialog):
   def _city_search_cb(self, e):
     # FIXME: if same as last successful search text don't update first_match_path
     # FIXME: and if self.city_found same as first_match_path highlight in red
-    txt=e.get_text().strip()
+    txt=e.get_text().strip().lower()
+    if type(txt)==unicode: txt=txt.translate(normalize_tb)
+    else: txt=txt.decode('utf-8').translate(normalize_tb)
     e.modify_base(gtk.STATE_NORMAL, None)
     tree=self.cities_tree
     store, p=tree.get_selection().get_selected_rows()
@@ -189,7 +197,7 @@ class ConfigDlg(gtk.Dialog):
     def tree_walk_cb(model, path, i):
       if current and path<=current: return False
       if limit and path>=limit: return True
-      if txt in store.get_value(i,0):
+      if txt in store.get_value(i,3):
         tree.expand_to_path(path)
         tree.scroll_to_cell(path)
         tree.get_selection().select_iter(i)
@@ -214,14 +222,14 @@ class ConfigDlg(gtk.Dialog):
     for R in rows:
       r=dict(R)
       if country!=r['country']:
-        country_i=s.append(None,(r['country'], False, 0))
+        country_i=s.append(None,(r['country'], False, 0, r['country'].lower().translate(normalize_tb)))
       if state!=r['state']:
-        state_i=s.append(country_i,(r['state'], False, 0))
+        state_i=s.append(country_i,(r['state'], False, 0, r['state'].lower().translate(normalize_tb)))
       country=r['country']
       state=r['state']
-      city=u'%s - %s' % (r['name'], r['locale_name'])
-      #city=r['name']
-      city_i=s.append(state_i,(city, True, r['id']))
+      if r['locale_name']: city=u'%s - %s' % (r['name'], r['locale_name'])
+      else: city=r['name']
+      city_i=s.append(state_i,(city, True, r['id'], city.lower().translate(normalize_tb)))
       if self.applet.conf.get('city_id',None)==r['id']: city_path=s.get_path(city_i)
     if city_path:
       tree.expand_to_path(city_path)
