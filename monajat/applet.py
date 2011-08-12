@@ -4,6 +4,7 @@ import itl
 from monajat import Monajat
 from utils import init_dbus
 import locale, gettext
+import re
 
 import glib
 import gtk
@@ -45,7 +46,7 @@ class SoundPlayer:
     
   def on_message(self, bus, message):
     t = message.type
-    print t
+    # print t
     if t == gst.MESSAGE_EOS:
       if self.change_play_status: self.change_play_status()
       self.gst_player.set_state(gst.STATE_NULL)
@@ -241,6 +242,7 @@ class ConfigDlg(gtk.Dialog):
     return gtk.Dialog.run(self, *a, **kw)
 
 class applet(object):
+  locale_re=re.compile('^[a-z]+_[A-Z]+$', re.I)
   skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
   def __init__(self):
     self.conf_dlg=None
@@ -252,7 +254,7 @@ class applet(object):
     self.prayer_items=[]
     kw=self.conf_to_prayer_args()
     self.prayer=itl.PrayerTimes(**kw)
-    l=filter(lambda i: i.startswith('ar_') and "_" in i and '.' not in i, locale.locale_alias.keys())
+    l=filter(lambda i: i.startswith(self.m.lang+'_') and self.locale_re.match(i), locale.locale_alias.keys())
     if l:
       l,c=l[0].split('_',1)
       l=l+"_"+c.upper()+".UTF-8"
