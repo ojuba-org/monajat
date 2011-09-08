@@ -280,7 +280,8 @@ class applet(object):
       self.notify.add_action("previous", _("previous"), self.notify_cb)
       self.notify.add_action("next", _("next"), self.notify_cb)
       self.notify.add_action("copy", _("copy"), self.notify_cb)
-    self.notify.set_timeout(5000)
+    # FIXME: maybe we should have notify object per notification
+    #self.notify.set_timeout(5000) # FIXME: commented out to fix https://bugs.launchpad.net/ubuntu/+source/monajat/+bug/844680
     #self.notify.set_urgency(pynotify.URGENCY_LOW)
     self.notify.set_hint('resident', True)
     #self.notify.set_hint('transient', True)
