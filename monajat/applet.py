@@ -13,7 +13,6 @@ import cgi
 import math
 import json
 import time
-from functools  import cmp_to_key
 import gst
 
 # in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
