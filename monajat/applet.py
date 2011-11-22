@@ -328,7 +328,7 @@ class applet(object):
     if "alt" not in kw or not kw["alt"]: kw["alt"]=0.0
     kw["tz"]=kw["utc"]
     # NOTE: get DST from machine local setting
-    kw["dst"]=time.daylight
+    kw["dst"]=time.localtime().tm_isdst
     # FIXME: dst should have the following 3 options
     # a. auto from system, b. auto from algorithm, c. specified to 0/1 by user
     #dst=kw["dst_id"]
