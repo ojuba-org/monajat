@@ -241,7 +241,25 @@ class ConfigDlg(gtk.Dialog):
     return gtk.Dialog.run(self, *a, **kw)
 
 class applet(object):
+  locale_re=re.compile('^[a-z]+_[A-Z]+$', re.I)
   skip_auto_fn=os.path.expanduser('~/.monajat-applet-skip-auto')
+  
+  def _init_locale(self, lang):
+    try: l=locale.setlocale(locale.LC_MESSAGES, (lang, 'UTF-8'))
+    except: pass
+    else:
+      if l: os.environ['LC_MESSAGES']=l
+      return
+    for l in locale.locale_alias.keys():
+      if not l.startswith(lang+'_') or not self.locale_re.match(l): continue
+      l,c=l.split('_',1)
+      l=l+"_"+c.upper()+".UTF-8"
+      try: locale.setlocale(locale.LC_MESSAGES, l)
+      except locale.Error: pass
+      else:
+          os.environ['LC_MESSAGES']=l
+          return
+
   def __init__(self):
     self.conf_dlg=None
     self.chngbody=time.time()
@@ -252,10 +270,7 @@ class applet(object):
     self.prayer_items=[]
     kw=self.conf_to_prayer_args()
     self.prayer=itl.PrayerTimes(**kw)
-    try:
-      l=locale.setlocale(locale.LC_MESSAGES, (self.m.lang, 'UTF-8'))
-      if l: os.environ['LC_MESSAGES']=l
-    except locale.Error: pass
+    self._init_locale(self.m.lang)
     ld=os.path.join(self.m.get_prefix(),'..','locale')
     gettext.install('monajat', ld, unicode=0)
     self.ptnames=[_("Fajr"), _("Sunrise"), _("Dhuhr"), _("Asr"), _("Maghrib"), _("Isha'a")]
