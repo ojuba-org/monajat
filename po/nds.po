@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: monajat\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-08-13 16:06+0300\n"
-"PO-Revision-Date: 2011-08-21 09:38+0000\n"
+"PO-Revision-Date: 2011-12-18 15:26+0000\n"
 "Last-Translator: Jens Dodenhoff <Unknown>\n"
 "Language-Team: Low German <nds@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-22 04:35+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-12-19 04:46+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: monajat/applet.py:31 monajat/applet.py:107
 msgid "Monajat"
@@ -23,11 +23,11 @@ msgstr "Monajat"
 
 #: monajat/applet.py:33
 msgid "previous"
-msgstr "Torüg"
+msgstr "Verleden"
 
 #: monajat/applet.py:34
 msgid "next"
-msgstr "Wieder"
+msgstr "Nåkåmen"
 
 #: monajat/applet.py:35
 msgid "copy"
@@ -35,7 +35,7 @@ msgstr "Koperen"
 
 #: monajat/applet.py:59 monajat/applet.py:62
 msgid "Its Merits"
-msgstr "Sien Bedüden"
+msgstr "Sien Döögd"
 
 #: monajat/applet.py:110
 msgid "Monajat supplications"
@@ -43,7 +43,7 @@ msgstr "Monajat Beden"
 
 #: monajat/applet.py:146
 msgid "Show merits"
-msgstr "Opwies Bedüdens"
+msgstr "Opwies Döögd"
 
 #: monajat/applet.py:158
 msgid "Language"
