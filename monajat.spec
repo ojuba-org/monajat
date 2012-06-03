@@ -8,6 +8,8 @@ License: GPLv2
 Group: System Environment/Base
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires: python, libitl
+Requires:   pygobject3 >= 3.0.2
 BuildRequires: gettext
 BuildRequires: python, python-setuptools
 

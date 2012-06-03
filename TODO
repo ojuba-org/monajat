@@ -1,3 +1,7 @@
+
+- rewrite SoundPlayer class using Gst +
+- rewrite monajat screenlets ( may use gtk3 + css )
+
 - display which city
 - if caps got buttons and html but no hyperlinks show a button to display reference
 - the phrase "it's merits" should be in the language choosed by user not desktop language - FIXMED
