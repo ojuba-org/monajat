@@ -1,5 +1,4 @@
 
-- rewrite SoundPlayer class using Gst +
 - rewrite monajat screenlets ( may use gtk3 + css )
 
 - display which city

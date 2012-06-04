@@ -13,45 +13,41 @@ import cgi
 import math
 import json
 import time
-import gst
+
 # in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
 # in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
 # "resident"
 
-class SoundPlayer:
+class SoundPlayer(object):
     def __init__(self, fn = "", change_play_status = None):
         """ SoundPlayer Using gst """
-        # FIXME: port to Gst from gi.repository
         self.fn = fn
         self.change_play_status = change_play_status
-        self.gst_player = gst.element_factory_make("playbin2", "player")
+        Gst.init_check(None)
+        self.gst_player = Gst.ElementFactory.make("playbin2", "Ojuba-SoundPlayer")
         self.gst_player.set_property("uri", "file://" + fn)
         bus = self.gst_player.get_bus()
         bus.add_signal_watch()
-        bus.connect("message", self.on_message)
+        #bus.connect("message", self.on_message)
+        bus.connect('message::eos', self.on_message)
+        bus.connect('message::error', self.on_message)
         
     def play(self):
         fn = self.fn
         if fn and os.path.isfile(fn):
-            self.gst_player.set_state(gst.STATE_PLAYING)
+            self.gst_player.set_state(Gst.State.PLAYING)
     
     def stop(self):
-        self.gst_player.set_state(gst.STATE_NULL)
+        self.gst_player.set_state(Gst.State.NULL)
     
     def set_filename(self,fn):
         self.fn = fn
         self.gst_player.set_property("uri", "file://" + fn)
         
     def on_message(self, bus, message):
-        t = message.type
-        # print t
-        if t == gst.MESSAGE_EOS:
-            if self.change_play_status: self.change_play_status()
-            self.gst_player.set_state(gst.STATE_NULL)
-        elif t == gst.MESSAGE_ERROR:
-            self.gst_player.set_state(gst.STATE_NULL)
-            err, debug = message.parse_error()
-            print "Error: %s" % err, debug
+        if message:
+            print message
+        self.gst_player.set_state(Gst.State.NULL)
 
 normalize_tb = {
 65: 97, 66: 98, 67: 99, 68: 100, 69: 101, 70: 102, 71: 103, 72: 104, 73: 105, 74: 106, 75: 107, 76: 108, 77: 109, 78: 110, 79: 111, 80: 112, 81: 113, 82: 114, 83: 115, 84: 116, 85: 117, 86: 118, 87: 119, 88: 120, 89: 121, 90: 122,
@@ -170,7 +166,7 @@ class ConfigDlg(Gtk.Dialog):
     def change_play_status(self, status = None):
         if status == None:
             status = self.sound_player.gst_player.get_state()
-        if status == gst.STATE_PLAYING:
+        if status == Gst.State.PLAYING:
             self.sound_file.set_sensitive(False)
             self.play_b.set_property('label', _('Stop'))
         else:
@@ -184,11 +180,11 @@ class ConfigDlg(Gtk.Dialog):
         if b.get_label() == _('Play'):
             if not os.path.isfile(fn):
                 return
-            self.change_play_status(gst.STATE_PLAYING)
+            self.change_play_status(Gst.State.PLAYING)
             self.sound_player.set_filename(fn)
             self.sound_player.play()
         else:
-            self.change_play_status(gst.STATE_NULL)
+            self.change_play_status(Gst.State.NULL)
             self.sound_player.stop()
 
     def _city_search_cb(self, e):
@@ -197,9 +193,9 @@ class ConfigDlg(Gtk.Dialog):
         # FIXME: rerwite one fuction for fill cities and search, to reduce time
         txt = e.get_text().strip().lower()
         if type(txt) == unicode:
-            txt = txt.translate(normalize_tb)
+            atxt = txt.translate(normalize_tb)
         else:
-            txt = txt.decode('utf-8').translate(normalize_tb)
+            atxt = txt.decode('utf-8').translate(normalize_tb)
         e.modify_fg(Gtk.StateType.NORMAL, None)
         tree = self.cities_tree
         store, p = tree.get_selection().get_selected_rows()
@@ -213,7 +209,11 @@ class ConfigDlg(Gtk.Dialog):
                 return False
             if limit and path >= limit:
                 return True
-            if txt in store.get_value(i, 3):
+            try:
+                f = atxt in store.get_value(i, 3)
+            except UnicodeDecodeError:
+                f = txt in store.get_value(i, 3)
+            if f:
                 tree.expand_to_path(path)
                 tree.scroll_to_cell(path)
                 tree.get_selection().select_iter(i)
