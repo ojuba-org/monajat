@@ -41,6 +41,8 @@ class SoundPlayer(object):
         self.gst_player.set_state(Gst.State.NULL)
     
     def set_filename(self,fn):
+        if not fn or not os.path.isfile(fn):
+            return
         self.fn = fn
         self.gst_player.set_property("uri", "file://" + fn)
         
@@ -55,12 +57,22 @@ normalize_tb = {
 1577: 1607, # teh marboota ->    haa
 1611: None, 1612: None, 1613: None, 1614: None, 1615: None, 1616: None, 1617: None, 1618: None, 1609: 1575}
 
-
+def to_uincode(Str):
+    try:
+        Str = str(Str)
+    except UnicodeEncodeError:
+        pass
+    if type(Str) == unicode:
+        return Str.translate(normalize_tb)
+    else:
+        return Str.decode('utf-8').translate(normalize_tb)
+        
 class ConfigDlg(Gtk.Dialog):
     def __init__(self, applet):
         Gtk.Dialog.__init__(self)
         self.applet = applet
         self.m = applet.m
+        self.cities_ls = self.get_cities()
         #self.set_size_request(300,400)
         self.set_resizable(False) # FIXME: reconsider this
         self.connect('delete-event', lambda w,*a: w.hide() or True)
@@ -69,7 +81,7 @@ class ConfigDlg(Gtk.Dialog):
         self.add_button(_('Cancel'), Gtk.ResponseType.CANCEL)
         self.add_button(_('Save'), Gtk.ResponseType.OK)
         tabs = Gtk.Notebook()
-        tabs.set_size_request(-1,300)
+        tabs.set_size_request(-1,350)
         self.get_content_area().add(tabs)
         vb = Gtk.VBox(False, 2)
         tabs.append_page(vb, Gtk.Label(_('Generic')))
@@ -106,10 +118,36 @@ class ConfigDlg(Gtk.Dialog):
         tabs.append_page(vb, Gtk.Label(_('Location')))
         
         hb = Gtk.HBox()
+        hb.pack_start(Gtk.Label(_('Current city:')), False, False, 2)
+        vb.pack_start(hb, False, False, 6)
+        hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        e = Gtk.Entry()
+        # read cuurent city full name
+        c = self.get_city('id', self.applet.conf['city_id'])
+        if c:
+            c = c[0]
+            self.user_city = c['name']
+        else:
+            c = {}
+            c['country'] = _('Please, Secify your city')
+            c['state'] = ''
+            c['name'] = ''
+            c['locale_name'] = ''
+            self.user_city = 'Makka'
+        # set locale_name='' instead of None
+        c['locale_name'] = c['locale_name'] or ''
+        cl = '%(country)s - %(state)s - %(name)s %(locale_name)s' % c
+        self.cur_city_l = l = Gtk.Entry()
+        l.set_editable(False)
+        l.set_text(cl)
+        hb.pack_start(l, True, True, 2)
+        
+        hb = Gtk.HBox()
+        hb.pack_start(Gtk.Label(_('Change city:')), False, False, 2)
+        vb.pack_start(hb, False, False, 8)
+        self.Search_e = e = Gtk.Entry()
         e.connect('activate', self._city_search_cb)
-        hb.pack_start(e, False, False, 2)
+        hb.pack_start(e, True, True, 2)
         
         s = Gtk.TreeStore(str, bool, int, str) # label, is_city, id, normalized label
         self.cities_tree = tree = Gtk.TreeView(s)
@@ -134,7 +172,8 @@ class ConfigDlg(Gtk.Dialog):
         vb.pack_start(hb, False, True, 3)
         hb.pack_start(Gtk.Label(_('Sound:')), False, True, 2)
         self.sound_file = b = Gtk.FileChooserButton(_('Choose Athan media file'))
-        self.sound_file.set_filename(self.applet.conf['athan_media_file'])
+        if os.path.isfile(self.applet.conf['athan_media_file']):
+            self.sound_file.set_filename(self.applet.conf['athan_media_file'])
         ff = Gtk.FileFilter()
         ff.set_name(_('Sound Files'))
         ff.add_pattern('*.ogg')
@@ -160,8 +199,8 @@ class ConfigDlg(Gtk.Dialog):
         hb.pack_start(b,True,True,2)
         hb.pack_start(t,False,False,2)
         hb.pack_start(Gtk.Label(_('minutes')),False,False,2)
-        
-        self._fill_cities()
+        self._city_search_cb(self.Search_e, self.user_city)
+        #self._fill_cities()
 
     def change_play_status(self, status = None):
         if status == None:
@@ -187,15 +226,70 @@ class ConfigDlg(Gtk.Dialog):
             self.change_play_status(Gst.State.NULL)
             self.sound_player.stop()
 
-    def _city_search_cb(self, e):
+    def get_cities(self):
+        rows = self.m.cities_c.execute('SELECT * FROM cities')
+        rows = map(lambda a: dict(a), rows.fetchall())
+        return rows
+        
+    def get_city(self, f='id', v=''):
+        '''
+            filter self.cities_ls
+        '''
+        return filter(lambda a: a[f] == v, self.cities_ls)
+        
+    def _city_search_cb(self, e, v = None):
+        e.modify_fg(Gtk.StateType.NORMAL, None)
+        if v:
+            txt = v
+        else:
+            txt = e.get_text().strip().lower()
+        txt = to_uincode(txt)
+        if self.user_city == txt:
+            self._search_cb(txt)
+        else:
+            self.user_city = txt
+        rows = filter(lambda a: txt in str(a['name']).lower() or \
+                                txt in to_uincode(a['locale_name']) or \
+                                txt in str(a['state']).lower() or \
+                                txt in str(a['country']).lower(), self.cities_ls)
+       
+        country, country_i = None, None
+        state, state_i = None, None
+        city_path = None
+        s = self.cities_tree.get_model()
+        s.clear()
+        for r in rows:
+            #r = dict(R)
+            if country != r['country']:
+                country_i = s.append(None,
+                                     (r['country'],
+                                     False,
+                                     0,
+                                     r['country'].lower().translate(normalize_tb)))
+            if state != r['state']:
+                state_i = s.append(country_i,(r['state'],
+                                   False,
+                                   0,
+                                   r['state'].lower().translate(normalize_tb)))
+            country = r['country']
+            state = r['state']
+            if r['locale_name']:
+                city = u'%s - %s' % (r['name'], r['locale_name'])
+            else:
+                city = r['name']
+            city_i = s.append(state_i,(city,
+                                      True,
+                                      r['id'],
+                                      city.lower().translate(normalize_tb)))
+        self._search_cb(txt)
+    
+    def _search_cb(self, txt):
         # FIXME: if same as last successful search text don't update first_match_path
         # FIXME: and if self.city_found same as first_match_path highlight in red
-        # FIXME: rerwite one fuction for fill cities and search, to reduce time
-        txt = e.get_text().strip().lower()
+        # we can use self.search_last_path to fix search
         if type(txt) == unicode:
-            atxt = txt.translate(normalize_tb)
-        else:
-            atxt = txt.decode('utf-8').translate(normalize_tb)
+            txt = txt.encode('utf-8')
+        e = self.Search_e
         e.modify_fg(Gtk.StateType.NORMAL, None)
         tree = self.cities_tree
         store, p = tree.get_selection().get_selected_rows()
@@ -209,10 +303,7 @@ class ConfigDlg(Gtk.Dialog):
                 return False
             if limit and path >= limit:
                 return True
-            try:
-                f = atxt in store.get_value(i, 3)
-            except UnicodeDecodeError:
-                f = txt in store.get_value(i, 3)
+            f = txt in store.get_value(i, 3)
             if f:
                 tree.expand_to_path(path)
                 tree.scroll_to_cell(path)
@@ -227,7 +318,7 @@ class ConfigDlg(Gtk.Dialog):
             store.foreach(tree_walk_cb, tree)
             if not self.city_found:
                 e.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse("#FF0000"))
-        
+                
     def _fill_cities(self):
         # FIXME: rerwite one fuction for fill cities and search, to reduce time
         tree = self.cities_tree
@@ -382,7 +473,10 @@ class applet(object):
         except TypeError:
             return kw
         r = c.execute('SELECT * FROM cities AS c LEFT JOIN dst AS d ON d.i=dst_id WHERE c.id=?', (c_id,)).fetchone()
-        # FIXME: if not r: defaults to Makka
+        # set defaults to Makkah (14244)
+        if not r:
+            r = c.execute('SELECT * FROM cities AS c LEFT JOIN dst AS d ON d.i=dst_id WHERE c.id=?',
+                          (14244,)).fetchone()
         kw = dict(r)
         if "alt" not in kw or not kw["alt"]:
             kw["alt"] = 0.0
@@ -429,11 +523,14 @@ class applet(object):
             try:
                 c_id = int(self.conf['city_id'])
             except ValueError:
-                del self.conf['city_id']
+                self.conf['city_id'] =  14244
             except TypeError:
-                del self.conf['city_id']
+                self.conf['city_id'] = 14244
             else:
                 self.conf['city_id'] = c_id
+        else:
+            # set default to makkah (14244)
+            self.conf['city_id'] = 14244
         # set athan media file exists
         self.sound_player.set_filename(self.conf['athan_media_file'])
         # fix types

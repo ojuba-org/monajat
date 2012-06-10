@@ -1,4 +1,5 @@
 
+- fix search_cb
 - rewrite monajat screenlets ( may use gtk3 + css )
 
 - display which city
@@ -20,4 +21,5 @@
 
 - rematch the Hadith numbers with the one from the publisher we want to use.
 - put links to web sites having the full text of the hadith
+
 
