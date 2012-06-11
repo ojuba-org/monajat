@@ -163,7 +163,6 @@ class ConfigDlg(Gtk.Dialog):
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.ALWAYS)
         scroll.add(tree)
         vb.pack_start(scroll, True, True, 2)
-
         self.sound_player = SoundPlayer(self.applet.conf['athan_media_file'],
                                         self.change_play_status)
         vb = Gtk.VBox(False, 2)
@@ -172,6 +171,7 @@ class ConfigDlg(Gtk.Dialog):
         vb.pack_start(hb, False, True, 3)
         hb.pack_start(Gtk.Label(_('Sound:')), False, True, 2)
         self.sound_file = b = Gtk.FileChooserButton(_('Choose Athan media file'))
+        
         if os.path.isfile(self.applet.conf['athan_media_file']):
             self.sound_file.set_filename(self.applet.conf['athan_media_file'])
         ff = Gtk.FileFilter()
@@ -246,6 +246,7 @@ class ConfigDlg(Gtk.Dialog):
         txt = to_uincode(txt)
         if self.user_city == txt:
             self._search_cb(txt)
+            return
         else:
             self.user_city = txt
         rows = filter(lambda a: txt in str(a['name']).lower() or \
@@ -460,6 +461,7 @@ class applet(object):
         self.conf['lang'] = self.m.lang
         self.conf['minutes'] = '10'
         self.conf['athan_media_file'] = os.path.join(self.m.prefix, 'athan.ogg')
+        print self.conf['athan_media_file']
         self.conf['notify_before_min'] = '10'
 
     def conf_to_prayer_args(self):

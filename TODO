@@ -1,5 +1,4 @@
 
-- fix search_cb
 - rewrite monajat screenlets ( may use gtk3 + css )
 
 - display which city
