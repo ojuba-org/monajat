@@ -76,25 +76,14 @@ This package contains screenlets version
 
 %prep
 %setup -q
+
 %build
-./update-pot.sh
-./gen-mo.sh
+make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
+%makeinstall DESTDIR=$RPM_BUILD_ROOT
 
-# ./gen-db.py # should be done by setup.py
-
-%{__python} setup.py install \
-        --root=$RPM_BUILD_ROOT \
-        --optimize=2
-rm $RPM_BUILD_ROOT/%{python_sitelib}/%{name}/sql*.py*
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/icons/hicolor/scalable/apps/
-ln -s ../../../../%{name}/%{name}.svg $RPM_BUILD_ROOT/%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-
-# install the screenlets
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/
-cp -r screenlets $RPM_BUILD_ROOT/%{_datadir}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -103,10 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/data.db
 
 %files python
-%doc README COPYING TODO
+%doc README COPYING TODO NEWS
 %{python_sitelib}/%{name}/__init__.py*
-%{python_sitelib}/%{name}/%{name}.py*
-%{python_sitelib}/%{name}/itl.py*
+%{python_sitelib}/%{name}/*.py*
 %{python_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
@@ -117,7 +105,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/cities.db
 %{_datadir}/%{name}/athan.ogg
 %{_datadir}/%{name}/%{name}.svg
+
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
 /etc/xdg/autostart/*
 
 %files mod

@@ -1,0 +1,3 @@
+*.desktop.in
+monajat/*.py
+screenlets/Monajat/*.py

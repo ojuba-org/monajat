@@ -1,8 +1,7 @@
 [Desktop Entry]
-Name=Monajat Applet for supplications
-Name[ar]=بريمج مناجاة للأذكار
-Comment=Monajat in system tray icon
-Comment[ar]=بريمج مناجاة للأذكار
+Encoding=UTF-8
+_Name=Monajat Applet for supplications
+_Comment=Monajat in system tray icon
 Exec=/usr/bin/monajat-applet --auto
 Terminal=false
 Type=Application
