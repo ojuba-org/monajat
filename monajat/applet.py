@@ -435,8 +435,8 @@ class applet(object):
         glib.timeout_add_seconds(1, self.timer_cb)
 
     def show_notify_cb(self, body, *args):
-        notify = Notify.Notification.new(_("Monajat"), None, None)
-        notify.set_property('icon-name','monajat')
+        notify = Notify.Notification()
+        notify.set_property('icon-name', os.path.join(self.m.get_prefix(),'monajat.svg'))
         notify.set_property('summary', _("Monajat") )
         if 'actions' in self.notifycaps:
             notify.add_action("previous", _("Back"), self.prev_cb, None, None)
@@ -717,8 +717,7 @@ class applet(object):
         # FIXME: please add more the authors
         dlg = Gtk.AboutDialog()
         dlg.set_default_response(Gtk.ResponseType.CLOSE)
-        #dlg.connect('delete-event', self.hide_cb)
-        #dlg.connect('response', self.hide_cb)
+        dlg.set_icon_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
         try:
             dlg.set_program_name("Monajat")
         except:
