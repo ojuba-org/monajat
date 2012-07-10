@@ -1,7 +1,8 @@
 APPNAME := monajat
+VERSION := $(shell awk '/Version:/ { print $$2 }' $(APPNAME).spec)
 DESTDIR = /
 DATADIR = $(DESTDIR)/usr/share
-DOCDIR = $(DATADIR)/doc/$(APPNAME)
+DOCDIR = $(DATADIR)/doc/$(APPNAME)-$(VERSION)
 XDGDIR = $(DESTDIR)/etc/xdg
 SOURCES = $(wildcard *.desktop.in)
 TARGETS = ${SOURCES:.in=}
@@ -41,10 +42,10 @@ install: all
 		$(INSTALL) -d $(DATADIR)/icons/hicolor/$${i}x$${i}/apps; \
 		$(INSTALL) -m 0644 -D $(APPNAME)-$${i}.png $(DATADIR)/icons/hicolor/$${i}x$${i}/apps/$(APPNAME).png; \
 	done
-	#for i in README COPYING TODO NEWS; do\
-	#	$(ECHO) "Copying: $${i} -> $(DOCDIR)";\
-	#	$(INSTALL) -m 0644 -D $${i} $(DOCDIR)/$${i}; \
-	#done
+	for i in README COPYING TODO NEWS; do\
+		$(ECHO) "Copying: $${i} -> $(DOCDIR)";\
+		$(INSTALL) -m 0644 -D $${i} $(DOCDIR)/$${i}; \
+	done
 
 uninstall:
 	@$(ECHO) "*** Uninstalling..."

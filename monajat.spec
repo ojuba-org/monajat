@@ -1,7 +1,7 @@
 Name: monajat
 Summary: Monajat Islamic Supplications
 URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.6.3
+Version: 2.6.5
 Release: 1%{?dist}
 Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
 License: GPLv2
@@ -92,8 +92,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/data.db
 
 %files python
-%doc README COPYING TODO NEWS
-%{python_sitelib}/%{name}/__init__.py*
+#%doc README COPYING TODO NEWS
+%{_defaultdocdir}/%{name}-%{version}/*
 %{python_sitelib}/%{name}/*.py*
 %{python_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
@@ -117,6 +117,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/screenlets/*
 
 %changelog
+* Sat Jul 23 2011 Muayyad Saleh Alsadi <alsadi@ojuba.org> - 2.6.4-1
+- use notify object per notification
+- fix unicode
+- fix installation files
+- cities search fix
+- speed up search cities
+- port SoundPlayer to Gst
+- Port to gtk3
+
 * Sat Jul 23 2011 Muayyad Saleh Alsadi <alsadi@ojuba.org> - 2.6.0-1
 - play Athan audio file
 

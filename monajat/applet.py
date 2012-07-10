@@ -8,7 +8,7 @@ import locale, gettext
 import re
 
 import glib
-from gi.repository import GObject, Gtk, Gdk, Notify, Gst
+from gi.repository import Gtk, Gdk, Notify, Gst
 import cgi
 import math
 import json
@@ -398,6 +398,9 @@ class applet(object):
         self.prayer_items = []
         kw = self.conf_to_prayer_args()
         self.prayer = itl.PrayerTimes(**kw)
+        Notify.init('MonajatApplet')
+        self.notifycaps = Notify.get_server_caps ()
+        print self.notifycaps
         self._init_locale(self.m.lang)
         ld = os.path.join(self.m.get_prefix(), '..', 'locale')
         gettext.install('monajat', ld, unicode=0)
@@ -414,24 +417,9 @@ class applet(object):
         #self.s=Gtk.status_icon_new_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
         #self.s.connect('popup-menu',self.popup_cb)
         #self.s.connect('activate',self.next_cb)
-        Notify.init('MonajatApplet')
-        self.notifycaps = Notify.get_server_caps ()
-        print self.notifycaps
-        self.notify = Notify.Notification.new(_("Monajat"), None, None)
-        self.notify.set_property('icon-name','monajat')
-        self.notify.set_property('summary', _("Monajat") )
-        if 'actions' in self.notifycaps:
-            self.notify.add_action("previous", _("Back"), self.notify_cb, None, None)
-            self.notify.add_action("next", _("Forward"), self.notify_cb, None, None)
-            self.notify.add_action("copy", _("copy"), self.notify_cb, None, None)
-        # FIXME: maybe we should have notify object per notification
-        #self.notify.set_timeout(5000) # FIXME: commented out to fix https://bugs.launchpad.net/ubuntu/+source/monajat/+bug/844680
-        #self.notify.set_urgency(Notify.URGENCY_LOW)
-        #self.notify.set_hint('resident', True)
-        #self.notify.set_hint('transient', True)
+        
 
         self.statusicon = Gtk.StatusIcon ()
-        #self.notify.attach_to_status_icon(self.statusicon)
         self.statusicon.connect('popup-menu',self.popup_cb)
         self.statusicon.connect('activate',self.next_cb)
         self.statusicon.set_title(_("Monajat"))
@@ -446,6 +434,17 @@ class applet(object):
         self.start_time = time.time()
         glib.timeout_add_seconds(1, self.timer_cb)
 
+    def show_notify_cb(self, body, *args):
+        notify = Notify.Notification.new(_("Monajat"), None, None)
+        notify.set_property('icon-name','monajat')
+        notify.set_property('summary', _("Monajat") )
+        if 'actions' in self.notifycaps:
+            notify.add_action("previous", _("Back"), self.prev_cb, None, None)
+            notify.add_action("next", _("Forward"), self.next_cb, None, None)
+            notify.add_action("copy", _("copy"), self.copy_cb, None, None)
+        notify.set_property('body', body )
+        notify.show()
+        
     def config_cb(self, *a):
         if self.conf_dlg == None:
             self.conf_dlg = ConfigDlg(self)
@@ -586,8 +585,8 @@ class applet(object):
         self.last_time = time.time()
         self.first_notif_done = True
         s = self.ptnames[self.last_athan]
-        self.notify.set_property('body', _('''It's now time for %s prayer''') % s)
-        self.notify.show()
+        self.show_notify_cb(_('''It's now time for %s prayer''') % s)
+        return True
 
     def athan_notif_cb(self):
         i, t, dt = self.prayer.get_next_time_stamp()
@@ -616,10 +615,10 @@ class applet(object):
             return True
         if self.conf['notify_before_min'] \
            and self.next_athan_delta <= self.conf['notify_before_min']*60 \
-           and self.next_athan_i!=self.notif_last_athan:
-               self.notif_last_athan=self.next_athan_i
+           and self.next_athan_i != self.notif_last_athan:
+               self.notif_last_athan = self.next_athan_i
                self.next_cb()
-        elif self.conf['minutes'] and dt>=self.conf['minutes']*60:
+        elif self.conf['minutes'] and dt >= self.conf['minutes']*60:
                self.next_cb()
         return True
 
@@ -644,6 +643,11 @@ class applet(object):
             return "<b>%s</b>\n\n" % cgi.escape(r)
         return "%s\n\n" % r
 
+    def body_to_str(self, body):
+        if type(body) == unicode:
+            return body.encode('utf-8')
+        return body
+        
     def render_body(self, m):
         merits = m['merits']
         if not self.conf['show_merits']:
@@ -651,11 +655,15 @@ class applet(object):
         if "body-markup" in self.notifycaps:
             body = cgi.escape(m['text'])
             if merits:
-                body += """\n\n<b>%s</b>: %s""" % (_("Its Merits"),cgi.escape(merits))
+                body = """{}\n\n<b>{}</b>: {}""".format(self.body_to_str(body),
+                                                        _("Its Merits"),
+                                                        self.body_to_str(cgi.escape(merits)))
         else:
             body = m['text']
             if merits:
-                body += """\n\n** %s **: %s""" % (_("Its Merits"),merits)
+                body = """{}\n\n** {} **: {}""".format(self.body_to_str(body),
+                                                       _("Its Merits"),
+                                                       merits)
         
         if "body-hyperlinks" in self.notifycaps:
             L = []
@@ -667,18 +675,21 @@ class applet(object):
                     t = cgi.escape(ll[1])
                 else:
                     t = url
-                L.append(u"""<a href='%s'>%s</a>""" % (url,t))
+                L.append("""<a href='{}'>{}</a>""".format((url,t)))
             l = u"\n\n".join(L)
-            body += u"\n\n" + l
+            body += self.body_to_str(u"\n\n" + l)
         # if we are close to time show it before supplication
         if self.next_athan_delta >= 0 and self.next_athan_delta <= 600:
-            body = self.fuzzy_delta() + body
+            body = self.fuzzy_delta() + self.body_to_str(body)
         else:
-            body = body + "\n\n" + self.fuzzy_delta()
+            if type(body) == unicode:
+                body = body.encode('utf-8')
+            body = """{}\n\n{}""".format(self.body_to_str(body), self.fuzzy_delta())
+            #body = body + "\n\n" + self.fuzzy_delta()
         #timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
         #if not isnear: body+=timeNP
         #else: body=timeNP+body
-        self.notify.set_property('body', body)
+        self.show_notify_cb(body)
         return body
 
     def dbus_cb(self, *args):
@@ -689,24 +700,15 @@ class applet(object):
     def next_cb(self,*args):
         self.last_time = time.time()
         self.first_notif_done = True
-        try:
-            self.notify.close()
-        except glib.GError:
-            pass
         self.render_body(self.m.go_forward())
-        self.notify.show()
         return True
 
     def prev_cb(self, *args):
-        self.last_time = time.time()
-        try:
-            self.notify.close()
-        except glib.GError:
-            pass
+        self.first_notif_done = True
         self.render_body(self.m.go_back())
-        self.notify.show()
+        return True
 
-    def copy_cb(self,*args):
+    def copy_cb(self, *args):
         r = self.m.get_current()
         self.clip1.set_text(r['text'], -1)
         self.clip2.set_text(r['text'], -1)
@@ -766,7 +768,7 @@ class applet(object):
         for p,t in zip(ptn, pt):
             if not p: continue
             i = Gtk.MenuItem
-            self.prayer_items[j].set_label(u"{: <15} {}".format(p, t.format(),))
+            self.prayer_items[j].set_label("{: <15} {}".format(p, t.format(),))
             j += 1
     
     def init_menu(self):
@@ -835,11 +837,7 @@ class applet(object):
         self.m.set_lang(l)
         self.save_conf()
 
-    def notify_cb(self,notify,action, *a):
-        try:
-            self.notify.close()
-        except glib.GError:
-            pass
+    def notify_cb(self, notify, action, *a):
         if action == "exit":
             Gtk.main_quit()
         elif action == "copy":
