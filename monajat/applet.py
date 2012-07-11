@@ -663,7 +663,7 @@ class applet(object):
             if merits:
                 body = """{}\n\n** {} **: {}""".format(self.body_to_str(body),
                                                        _("Its Merits"),
-                                                       merits)
+                                                       self.body_to_str(merits))
         
         if "body-hyperlinks" in self.notifycaps:
             L = []

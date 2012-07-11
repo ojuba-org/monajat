@@ -77,6 +77,11 @@ uninstall:
 	@$(ECHO) "*** Generating Database..."
 	@$(INTLTOOL_MERGE) -d po $< $@
 
+clean_restor_pos:
+	@make clean
+	@$(ECHO) "*** Retoring pos..."
+	@git checkout po/* 2>/dev/null || :
+    
 clean:
 	@$(ECHO) "*** Cleaning..."
 	@$(MAKE) -C po clean
@@ -92,3 +97,4 @@ clean:
 	@$(RM) -f $(APPNAME)-*.png
 	@$(ECHO) "- Removing: monajat-data/data.db"
 	@$(RM) -f monajat-data/data.db
+	
