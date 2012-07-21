@@ -398,9 +398,6 @@ class applet(object):
         self.prayer_items = []
         kw = self.conf_to_prayer_args()
         self.prayer = itl.PrayerTimes(**kw)
-        Notify.init('MonajatApplet')
-        self.notifycaps = Notify.get_server_caps ()
-        print self.notifycaps
         self._init_locale(self.m.lang)
         ld = os.path.join(self.m.get_prefix(), '..', 'locale')
         gettext.install('monajat', ld, unicode=0)
@@ -412,11 +409,7 @@ class applet(object):
                         _("Isha'a")]
         self.clip1 = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         self.clip2 = Gtk.Clipboard.get(Gdk.SELECTION_PRIMARY)
-        #self.init_about_dialog()
         self.init_menu()
-        #self.s=Gtk.status_icon_new_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
-        #self.s.connect('popup-menu',self.popup_cb)
-        #self.s.connect('activate',self.next_cb)
         
 
         self.statusicon = Gtk.StatusIcon ()
@@ -424,7 +417,11 @@ class applet(object):
         self.statusicon.connect('activate',self.next_cb)
         self.statusicon.set_title(_("Monajat"))
         self.statusicon.set_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
-
+        
+        Notify.init(_("Monajat"))
+        self.init_notify_cb()
+        print self.notifycaps
+        
         self.notif_last_athan = -1
         self.next_athan_delta = -1
         self.next_athan_i = -1
@@ -434,16 +431,19 @@ class applet(object):
         self.start_time = time.time()
         glib.timeout_add_seconds(1, self.timer_cb)
 
-    def show_notify_cb(self, body, *args):
-        notify = Notify.Notification()
-        notify.set_property('icon-name', os.path.join(self.m.get_prefix(),'monajat.svg'))
-        notify.set_property('summary', _("Monajat") )
+    def init_notify_cb(self):
+        self.notifycaps = Notify.get_server_caps ()
+        self.notify = Notify.Notification()
+        self.notify.set_property('icon-name', os.path.join(self.m.get_prefix(),'monajat.svg'))
+        self.notify.set_property('summary', _("Monajat") )
         if 'actions' in self.notifycaps:
-            notify.add_action("previous", _("Back"), self.prev_cb, None, None)
-            notify.add_action("next", _("Forward"), self.next_cb, None, None)
-            notify.add_action("copy", _("copy"), self.copy_cb, None, None)
-        notify.set_property('body', body )
-        notify.show()
+            self.notify.add_action("previous", _("Back"), self.notify_cb, None, None)
+            self.notify.add_action("next", _("Forward"), self.notify_cb, None, None)
+            self.notify.add_action("copy", _("copy"), self.notify_cb, None, None)
+        
+    def show_notify_cb(self, body, *args):
+        self.notify.set_property('body', body )
+        self.notify.show()
         
     def config_cb(self, *a):
         if self.conf_dlg == None:
@@ -605,6 +605,9 @@ class applet(object):
         return False
 
     def timer_cb(self, *args):
+        if not 'actions' in self.notifycaps:
+            self.init_notify_cb()
+            print self.notifycaps
         dt = int(time.time()-self.last_time)
         if self.prayer.update():
             self.update_prayer()
@@ -697,7 +700,7 @@ class applet(object):
         self.next_cb()
         return 0
 
-    def next_cb(self,*args):
+    def next_cb(self, *args):
         self.last_time = time.time()
         self.first_notif_done = True
         self.render_body(self.m.go_forward())

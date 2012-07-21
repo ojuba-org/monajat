@@ -15,7 +15,7 @@ INTLTOOL_MERGE := intltool-merge
 RM := $(shell which rm | egrep '/' | sed  's/\s//g')
 
 
-all: $(TARGETS) icons db
+all: $(TARGETS) db
 
 icons:
 	@for i in 96 72 64 48 36 32 24 22 16; do \
@@ -38,10 +38,10 @@ install: all
 	@$(INSTALL) -d $(DOCDIR)
 	@$(INSTALL) -d $(DATADIR)/icons/hicolor/scalable/apps;
 	@$(INSTALL) -m 0644 -D monajat-data/$(APPNAME).svg $(DATADIR)/icons/hicolor/scalable/apps/
-	@for i in 96 72 64 48 36 32 24 22 16; do \
-		$(INSTALL) -d $(DATADIR)/icons/hicolor/$${i}x$${i}/apps; \
-		$(INSTALL) -m 0644 -D $(APPNAME)-$${i}.png $(DATADIR)/icons/hicolor/$${i}x$${i}/apps/$(APPNAME).png; \
-	done
+#	@for i in 96 72 64 48 36 32 24 22 16; do \
+#		$(INSTALL) -d $(DATADIR)/icons/hicolor/$${i}x$${i}/apps; \
+#		$(INSTALL) -m 0644 -D $(APPNAME)-$${i}.png $(DATADIR)/icons/hicolor/$${i}x$${i}/apps/$(APPNAME).png; \
+#	done
 	for i in README COPYING TODO NEWS; do\
 		$(ECHO) "Copying: $${i} -> $(DOCDIR)";\
 		$(INSTALL) -m 0644 -D $${i} $(DOCDIR)/$${i}; \

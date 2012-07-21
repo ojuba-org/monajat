@@ -99,15 +99,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*/*/*.mo
 
 %files applet
-%{python_sitelib}/%{name}/applet.py*
-%{python_sitelib}/%{name}/utils.py*
+#%{python_sitelib}/%{name}/applet.py*
+#%{python_sitelib}/%{name}/utils.py*
 %{_bindir}/%{name}-applet
 %{_datadir}/%{name}/cities.db
 %{_datadir}/%{name}/athan.ogg
 %{_datadir}/%{name}/%{name}.svg
 
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-%{_datadir}/icons/hicolor/*/apps/%{name}.png
+#%{_datadir}/icons/hicolor/*/apps/%{name}.png
 /etc/xdg/autostart/*
 
 %files mod

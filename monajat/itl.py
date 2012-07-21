@@ -19,8 +19,12 @@ class Date(Structure):
         """
         return True if changed
         """
-        d=time.localtime()
-        if d.tm_year==self.year and d.tm_mon==self.month and d.tm_mday==self.day: return False
+        try:
+            d = time.localtime()
+        except TypeError:
+            return False
+        if d.tm_year == self.year and d.tm_mon == self.month and d.tm_mday == self.day:
+            return False
         self.day, self.month, self.year = d.tm_mday, d.tm_mon, d.tm_year
         return True
 
