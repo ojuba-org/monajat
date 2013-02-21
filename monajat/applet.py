@@ -667,7 +667,8 @@ class applet(object):
                 body = """{}\n\n** {} **: {}""".format(self.body_to_str(body),
                                                        _("Its Merits"),
                                                        self.body_to_str(merits))
-        
+        if type(body) == unicode:
+                body = body.encode('utf-8')
         if "body-hyperlinks" in self.notifycaps:
             L = []
             links = m.get('links',u'').split(u'\n')
@@ -678,15 +679,14 @@ class applet(object):
                     t = cgi.escape(ll[1])
                 else:
                     t = url
-                L.append("""<a href='{}'>{}</a>""".format((url,t)))
+                print url, t
+                L.append(u"""<a href='{}'>{}</a>""".format(url,t))
             l = u"\n\n".join(L)
-            body += self.body_to_str(u"\n\n" + l)
+            body += self.body_to_str("\n\n" + l)
         # if we are close to time show it before supplication
         if self.next_athan_delta >= 0 and self.next_athan_delta <= 600:
             body = self.fuzzy_delta() + self.body_to_str(body)
         else:
-            if type(body) == unicode:
-                body = body.encode('utf-8')
             body = """{}\n\n{}""".format(self.body_to_str(body), self.fuzzy_delta())
             #body = body + "\n\n" + self.fuzzy_delta()
         #timeNP,isnear, istime = self.nextprayer_note(self.get_nextprayer(self.prayer.get_prayers()))
