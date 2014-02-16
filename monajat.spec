@@ -42,7 +42,7 @@ Requires:	python
 Requires:	%{name}-database
 Requires:	libitl
 
-%description python
+%description -n python-monajat
 Monajat Islamic Supplications
 
 This is the python monajat library needed by all monajat front ends
