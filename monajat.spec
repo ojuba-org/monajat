@@ -14,7 +14,7 @@ Requires:	python, libitl
 Requires:	libitl
 Requires:	pygobject3 >= 3.0.2
 BuildRequires:	gettext
-BuildRequires:	python, python-setuptools
+BuildRequires:	python
 BuildRequires:	python-setuptools
 BuildRequires:	python2-devel
 
