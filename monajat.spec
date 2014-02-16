@@ -1,62 +1,73 @@
-Name: monajat
-Summary: Monajat Islamic Supplications
-URL: http://git.ojuba.org/cgit/monajat/about/
-Version: 2.6.5
-Release: 1%{?dist}
-Source0: http://git.ojuba.org/cgit/monajat/snapshot/%{name}-%{version}.tar.bz2
-License: GPLv2
-Group: System Environment/Base
-BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires: python, libitl
-Requires:   pygobject3 >= 3.0.2
-BuildRequires: gettext
-BuildRequires: python, python-setuptools
+%global owner ojuba-org
+%global commit #Write commit number here
+
+Name:		monajat
+Summary:	Monajat Islamic Supplications
+URL:		http://ojuba.org
+Version:	2.6.5
+Release:	2%{?dist}
+Source:		https://github.com/%{owner}/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
+License:	WAQFv2 and GPLv2
+Group:		System Environment/Base
+BuildArch:	noarch
+Requires:	python, libitl
+Requires:	libitl
+Requires:	pygobject3 >= 3.0.2
+BuildRequires:	gettext
+BuildRequires:	python, python-setuptools
+BuildRequires:	python-setuptools
+BuildRequires:	python2-devel
 
 # /usr/share/gnome-shell/extensions/Monajat@ojuba.org
-
-%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %description
 Monajat Islamic Supplications
 
 %package database
-Group: System Environment/Base
-Summary: Monajat Islamic Supplications database
-BuildArch: noarch
+Group:		System Environment/Base
+Summary:	Monajat Islamic Supplications database
+BuildArch:	noarch
+
 %description database
 Monajat Islamic Supplications
 
 This is the database used by monajat.
 
 
-%package python
-Group: System Environment/Base
-Summary: Monajat Islamic Supplications
-BuildArch: noarch
-Requires: python, %{name}-database, libitl
+%package -n python-monajat
+Group:		System Environment/Base
+Summary:	Monajat Islamic Supplications
+BuildArch:	noarch
+Requires:	python
+Requires:	%{name}-database
+Requires:	libitl
+
 %description python
 Monajat Islamic Supplications
 
 This is the python monajat library needed by all monajat front ends
 
 %package applet
-Summary: Monajat Islamic Supplications for Desktop Tray Applet
-Group: System Environment/Base
-BuildArch: noarch
-Requires: %{name}-python
+Summary:	Monajat Islamic Supplications for Desktop Tray Applet
+Group:		System Environment/Base
+BuildArch:	noarch
+Requires:	python-monajat
 # TODO: is it better to say gnome-python2-extras ?
-Requires: pygtk2, notify-python, desktop-notification-daemon
+Requires:	pygtk2
+Requires:	notify-python
+Requires:	desktop-notification-daemon
+
 %description applet
 Monajat Islamic Supplications
 
 This package contains the Desktop Tray Applet
 
 %package mod
-Summary: Monajat Islamic Supplications for console
-Group: System Environment/Base
-BuildArch: noarch
-Requires: %{name}-python
+Summary:	Monajat Islamic Supplications for console
+Group:		System Environment/Base
+BuildArch:	noarch
+Requires:	python-monajat
+
 %description mod
 Monajat Islamic Supplications
 
@@ -64,43 +75,39 @@ This package contains a console application that can be used in issue message
 or in the profile
 
 %package screenlets
-Summary: Monajat Islamic Supplications for Screenlets
-Group: System Environment/Base
-BuildArch: noarch
-Requires: screenlets
-Requires: %{name}-python
+Summary:	Monajat Islamic Supplications for Screenlets
+Group:		System Environment/Base
+BuildArch:	noarch
+Requires:	screenlets
+Requires:	python-monajat
+
 %description screenlets
 Monajat Islamic Supplications
 
 This package contains screenlets version
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{commit}
 
 %build
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 %makeinstall DESTDIR=$RPM_BUILD_ROOT
-
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files database
 %{_datadir}/%{name}/data.db
 
-%files python
-#%doc README COPYING TODO NEWS
+%files -n python-monajat
+%doc README COPYING TODO NEWS
 %{_defaultdocdir}/%{name}-%{version}/*
-%{python_sitelib}/%{name}/*.py*
-%{python_sitelib}/*.egg-info
+%{python2_sitelib}/%{name}/*.py*
+%{python2_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
 %files applet
-#%{python_sitelib}/%{name}/applet.py*
-#%{python_sitelib}/%{name}/utils.py*
+#%{python2_sitelib}/%{name}/applet.py*
+#%{python2_sitelib}/%{name}/utils.py*
 %{_bindir}/%{name}-applet
 %{_datadir}/%{name}/cities.db
 %{_datadir}/%{name}/athan.ogg
@@ -117,6 +124,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/screenlets/*
 
 %changelog
+* Sun Feb 16 2014 Mosaab Alzoubi <moceap@hotmail.com> - 2.6.5-2
+- General Revision.
+
 * Sat Jul 23 2011 Muayyad Saleh Alsadi <alsadi@ojuba.org> - 2.6.4-1
 - use notify object per notification
 - fix unicode
@@ -152,4 +162,3 @@ rm -rf $RPM_BUILD_ROOT
 
 * Thu Aug 6 2009  Muayyad Saleh AlSadi <alsadi@ojuba.org> - 0.1.0-1
 - initial packing
-
