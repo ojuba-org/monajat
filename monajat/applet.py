@@ -7,8 +7,7 @@ from utils import init_dbus
 import locale, gettext
 import re
 
-import glib
-from gi.repository import Gtk, Gdk, Notify, Gst
+from gi.repository import Gtk, Gdk, Notify, Gst, GObject
 import cgi
 import math
 import json
@@ -429,7 +428,7 @@ class applet(object):
         self.last_time = 0
         self.first_notif_done = False
         self.start_time = time.time()
-        glib.timeout_add_seconds(1, self.timer_cb)
+        GObject.timeout_add(1, self.timer_cb)
 
     def init_notify_cb(self):
         self.notifycaps = Notify.get_server_caps ()
