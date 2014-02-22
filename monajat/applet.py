@@ -24,7 +24,7 @@ class SoundPlayer(object):
         self.fn = fn
         self.change_play_status = change_play_status
         Gst.init_check(None)
-        self.gst_player = Gst.ElementFactory.make("playbin2", "Ojuba-SoundPlayer")
+        self.gst_player = Gst.ElementFactory.make("playbin", "Ojuba-SoundPlayer")
         self.gst_player.set_property("uri", "file://" + fn)
         bus = self.gst_player.get_bus()
         bus.add_signal_watch()
