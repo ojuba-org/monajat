@@ -437,9 +437,9 @@ class applet(object):
         self.notify.set_property('icon-name', os.path.join(self.m.get_prefix(),'monajat.svg'))
         self.notify.set_property('summary', _("Monajat") )
         if 'actions' in self.notifycaps:
-            self.notify.add_action("previous", _("Back"), self.notify_cb, None, None)
-            self.notify.add_action("next", _("Forward"), self.notify_cb, None, None)
-            self.notify.add_action("copy", _("copy"), self.notify_cb, None, None)
+            self.notify.add_action("previous", _("Back"), self.notify_cb, None)
+            self.notify.add_action("next", _("Forward"), self.notify_cb, None)
+            self.notify.add_action("copy", _("copy"), self.notify_cb, None)
         
     def show_notify_cb(self, body, *args):
         self.notify.set_property('body', body )
