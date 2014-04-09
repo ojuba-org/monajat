@@ -1,3 +1,17 @@
+2.6.4:
+* Use notify object per notification
+* Fix unicode
+* Cities search fix
+* Speed up search cities
+* Port SoundPlayer to Gst
+* Port to gtk3
+
+2.6.0:
+* Play Athan audio file
+
+2.5.0:
+* Prayer time support
+
 2.3.1:
 * save/load user preferences like language
 
