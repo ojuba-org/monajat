@@ -90,6 +90,24 @@ class ConfigDlg(Gtk.Dialog):
         self.show_merits = b = Gtk.CheckButton(_("Show merits"))
         self.show_merits.set_active(self.applet.conf['show_merits'])
         vb.pack_start(b, False, False, 2)
+        self.daylight_savings_time = b = Gtk.CheckButton(_("daylight_savings_time"))
+        self.daylight_savings_time.set_active(self.applet.conf['daylight_savings_time'])
+        vb.pack_start(b, False, False, 2)        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('method:')), False, False, 2)
+        self.pt_method = b = Gtk.ComboBoxText.new()
+        hb.pack_end(b, False, False, 2)
+        b.append_text("none. Set to default")
+        b.append_text("Egyptian General Authority of Survey")
+        b.append_text("University of Islamic Sciences, Karachi (Shaf'i)")
+        b.append_text("University of Islamic Sciences, Karachi (Hanafi)")
+        b.append_text("Islamic Society of North America")
+        b.append_text("Muslim World League (MWL)")
+        b.append_text("Umm Al-Qurra, Saudi Arabia")
+        b.append_text("Fixed Ishaa Interval (always 90)")
+        b.append_text("Egyptian General Authority of Survey (Egypt)")
+        b.set_active(self.applet.conf['pt_method'])      
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
         hb.pack_start(Gtk.Label(_('Language:')), False, False, 2)
@@ -164,6 +182,86 @@ class ConfigDlg(Gtk.Dialog):
         vb.pack_start(scroll, True, True, 2)
         self.sound_player = SoundPlayer(self.applet.conf['athan_media_file'],
                                         self.change_play_status)
+
+        vb = Gtk.VBox(False, 2)
+        tabs.append_page(vb, Gtk.Label(_('Edit_pt')))
+        
+        self.Edit_pt = b = Gtk.CheckButton(_("Edit_pt"))
+        self.Edit_pt.set_active(self.applet.conf['Edit_pt'])
+        vb.pack_start(b, False, False, 2)
+
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('Fajr')), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Fajr_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Fajr_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('Sunrise')), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Shrooq_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Shrooq_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('Dhuhr')), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Zuhr_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Zuhr_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('Asr')), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Asr_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Asr_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_('Maghrib')), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Maghrib_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Maghrib_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        hb.pack_start(Gtk.Label(_("Isha'a")), False, False, 2)
+        hb.pack_start(Gtk.HBox(), True, True, 2)
+        adj = Gtk.Adjustment(5, -60, 60, 1, 5)
+        self.Ishaa_min = b = Gtk.SpinButton()
+        b.set_adjustment(adj)
+        b.set_value(self.applet.conf['Ishaa_minutes'])
+        hb.pack_start(b, False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
+        
+        hb = Gtk.HBox()
+        vb.pack_start(hb, False, False, 2)
+        self.clear = cb = Gtk.Button(_('Clear'))
+        cb.connect('clicked', self.clear_pt_changes)
+        hb.pack_end(cb, False, False, 2)
+
         vb = Gtk.VBox(False, 2)
         tabs.append_page(vb, Gtk.Label(_('Notification')))
         hb = Gtk.HBox()
@@ -201,6 +299,14 @@ class ConfigDlg(Gtk.Dialog):
         self._city_search_cb(self.Search_e, self.user_city)
         #self._fill_cities()
 
+    def clear_pt_changes(self, b):
+        self.Fajr_min.set_value(0)
+        self.Shrooq_min.set_value(0)
+        self.Zuhr_min.set_value(0)
+        self.Asr_min.set_value(0)
+        self.Maghrib_min.set_value(0)
+        self.Ishaa_min.set_value(0)           
+        
     def change_play_status(self, status = None):
         if status == None:
             status = self.sound_player.gst_player.get_state()
@@ -397,6 +503,17 @@ class applet(object):
         self.prayer_items = []
         kw = self.conf_to_prayer_args()
         self.prayer = itl.PrayerTimes(**kw)
+        
+        self.prayer.method.extreme=int(self.conf['pt_method'])
+        self.prayer.method.offset=self.conf['Edit_pt']
+        if self.conf['Edit_pt'] == 1:
+            self.prayer.method.offList[0]=self.conf['Fajr_minutes']
+            self.prayer.method.offList[1]=self.conf['Shrooq_minutes']
+            self.prayer.method.offList[2]=self.conf['Zuhr_minutes']
+            self.prayer.method.offList[3]=self.conf['Asr_minutes']
+            self.prayer.method.offList[4]=self.conf['Maghrib_minutes']
+            self.prayer.method.offList[5]=self.conf['Ishaa_minutes']
+
         self._init_locale(self.m.lang)
         ld = os.path.join(self.m.get_prefix(), '..', 'locale')
         gettext.install('monajat', ld, unicode=0)
@@ -456,6 +573,15 @@ class applet(object):
     def default_conf(self):
         self.conf = {}
         self.conf['show_merits'] = '1'
+        self.conf['daylight_savings_time']='1'
+        self.conf['pt_method']='6'
+        self.conf['Edit_pt']='0'
+        self.conf['Fajr_minutes']='0'
+        self.conf['Shrooq_minutes']='0'
+        self.conf['Zuhr_minutes']='0'
+        self.conf['Asr_minutes']='0'
+        self.conf['Maghrib_minutes']='0'
+        self.conf['Ishaa_minutes']='0'
         self.conf['lang'] = self.m.lang
         self.conf['minutes'] = '10'
         self.conf['athan_media_file'] = os.path.join(self.m.prefix, 'athan.ogg')
@@ -482,7 +608,8 @@ class applet(object):
             kw["alt"] = 0.0
         kw["tz"] = kw["utc"]
         # NOTE: get DST from machine local setting
-        kw["dst"] = time.localtime().tm_isdst
+        #kw["dst"] = time.localtime().tm_isdst
+        kw["dst"] = self.conf['daylight_savings_time']
         # FIXME: dst should have the following 3 options
         # a. auto from system, b. auto from algorithm, c. specified to 0/1 by user
         #dst=kw["dst_id"]
@@ -543,6 +670,42 @@ class applet(object):
         except ValueError:
             self.conf['show_merits'] = 1
         try:
+            self.conf['daylight_savings_time'] = int(self.conf['daylight_savings_time']) 
+        except ValueError:
+            self.conf['daylight_savings_time'] = 1            
+        try:
+            self.conf['pt_method'] = int(self.conf['pt_method']) 
+        except ValueError:
+            self.conf['pt_method'] = 6        
+        try:
+            self.conf['Edit_pt'] = int(self.conf['Edit_pt']) 
+        except ValueError:
+            self.conf['Edit_pt'] = 0            
+        try:
+            self.conf['Fajr_minutes'] = int(self.conf['Fajr_minutes']) 
+        except ValueError:
+            self.conf['Fajr_minutes'] = 0            
+        try:
+            self.conf['Shrooq_minutes'] = int(self.conf['Shrooq_minutes']) 
+        except ValueError:
+            self.conf['Shrooq_minutes'] = 0            
+        try:
+            self.conf['Zuhr_minutes'] = int(self.conf['Zuhr_minutes']) 
+        except ValueError:
+            self.conf['Zuhr_minutes'] = 0            
+        try:
+            self.conf['Asr_minutes'] = int(self.conf['Asr_minutes']) 
+        except ValueError:
+            self.conf['Asr_minutes'] = 0            
+        try:
+            self.conf['Maghrib_minutes'] = int(self.conf['Maghrib_minutes']) 
+        except ValueError:
+            self.conf['Maghrib_minutes'] = 0             
+        try:
+            self.conf['Ishaa_minutes'] = int(self.conf['Ishaa_minutes']) 
+        except ValueError:
+            self.conf['Ishaa_minutes'] = 0    
+        try:
             self.conf['notify_before_min'] = int(float(self.conf['notify_before_min']))
         except ValueError:
             self.conf['notify_before_min'] = 10
@@ -552,6 +715,17 @@ class applet(object):
     def apply_conf(self):
         kw = self.conf_to_prayer_args()
         self.prayer = itl.PrayerTimes(**kw)
+
+        self.prayer.method.extreme=int(self.conf['pt_method'])
+        self.prayer.method.offset=self.conf['Edit_pt']
+        if self.conf['Edit_pt'] == 1:
+            self.prayer.method.offList[0]=self.conf['Fajr_minutes']
+            self.prayer.method.offList[1]=self.conf['Shrooq_minutes']
+            self.prayer.method.offList[2]=self.conf['Zuhr_minutes']
+            self.prayer.method.offList[3]=self.conf['Asr_minutes']
+            self.prayer.method.offList[4]=self.conf['Maghrib_minutes']
+            self.prayer.method.offList[5]=self.conf['Ishaa_minutes']
+
         self.update_prayer()
         self.sound_player.set_filename(self.conf['athan_media_file'])
         self.m.clear()
@@ -561,6 +735,15 @@ class applet(object):
     def save_conf(self):
         self.conf['cities_db_ver'] = self.m.cities_db_ver
         self.conf['show_merits'] = int(self.conf_dlg.show_merits.get_active())
+        self.conf['daylight_savings_time'] = int(self.conf_dlg.daylight_savings_time.get_active())
+        self.conf['pt_method'] = int(self.conf_dlg.pt_method.get_active())
+        self.conf['Edit_pt']=int(self.conf_dlg.Edit_pt.get_active())
+        self.conf['Fajr_minutes']=int(self.conf_dlg.Fajr_min.get_value())
+        self.conf['Shrooq_minutes']=int(self.conf_dlg.Shrooq_min.get_value())
+        self.conf['Zuhr_minutes']=int(self.conf_dlg.Zuhr_min.get_value())
+        self.conf['Asr_minutes']=int(self.conf_dlg.Asr_min.get_value())
+        self.conf['Maghrib_minutes']=int(self.conf_dlg.Maghrib_min.get_value())
+        self.conf['Ishaa_minutes']=int(self.conf_dlg.Ishaa_min.get_value())
         self.conf['lang'] = self.conf_dlg.lang.get_active_text()
         self.conf['minutes'] = int(self.conf_dlg.timeout.get_value())
         self.conf['athan_media_file'] = self.conf_dlg.sound_file.get_filename()
@@ -765,7 +948,8 @@ class applet(object):
         pt = self.prayer.get_prayers()
         j = 0
         ptn = list(self.ptnames)
-        ptn[1] = ''
+        #if you want to disable sunrise time showing from the popup menu use the commands in line 952 and 980
+        #ptn[1] = ''
         for p,t in zip(ptn, pt):
             if not p: continue
             i = Gtk.MenuItem
@@ -792,7 +976,9 @@ class applet(object):
         self.menu.add(Gtk.SeparatorMenuItem.new())
 
         self.prayer_items = []
-        for j in range(5):
+        #for disabling sunerise time from the popup menu
+        #for j in range(5):
+        for j in range(6):
             i = Gtk.MenuItem("-")
             self.prayer_items.append(i)
             self.menu.add(i)
@@ -856,4 +1042,3 @@ def applet_main():
 
 if __name__ == "__main__":
     applet_main()
-

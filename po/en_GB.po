@@ -191,3 +191,19 @@ msgstr "Monajat supplications"
 #: ../monajat/applet.py:800
 msgid "Configure"
 msgstr ""
+
+#: ../monajat/applet.py:93
+msgid "daylight_savings_time"
+msgstr "Daylight Savings time"
+
+#: ../monajat/applet.py:98
+msgid "method:"
+msgstr ""
+
+#: ../monajat/applet.py:187 ../monajat/applet.py:189
+msgid "Edit_pt"
+msgstr "Edit Prayer times"
+
+#: ../monajat/applet.py:261
+msgid "Clear"
+msgstr ""

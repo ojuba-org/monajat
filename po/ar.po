@@ -187,3 +187,20 @@ msgstr "برنامج الأذكار مناجاة"
 #: ../monajat/applet.py:800
 msgid "Configure"
 msgstr "إعداد"
+
+
+#: ../monajat/applet.py:93
+msgid "daylight_savings_time"
+msgstr "مراعاة التوقيت الصيفي"
+
+#: ../monajat/applet.py:98
+msgid "method:"
+msgstr "طريقة حساب الأوقات"
+
+#: ../monajat/applet.py:187 ../monajat/applet.py:189
+msgid "Edit_pt"
+msgstr "تعديل الأوقات يدويا"
+
+#: ../monajat/applet.py:261
+msgid "Clear"
+msgstr "مسح"
