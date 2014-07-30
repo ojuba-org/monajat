@@ -1,4 +1,4 @@
-
+- fix unicode when running different desktop environments (I tested mate)
 - rewrite monajat screenlets ( may use gtk3 + css )
 
 - display which city

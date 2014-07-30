@@ -5,7 +5,7 @@ Name:		monajat
 Summary:	Monajat Islamic Supplications
 URL:		http://ojuba.org
 Version:	2.6.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 Source:		https://github.com/%{owner}/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
 License:	WAQFv2 and GPLv2
 Group:		System Environment/Base
@@ -124,6 +124,16 @@ make %{?_smp_mflags}
 %{_datadir}/screenlets/*
 
 %changelog
+* Wed Jul 30 2014 Ehab El-Gedawy <ehabsas@gmail.com> - 2.6.5-3
+- New options in the settings for the prayer times
+- Update en_GB.po
+- Update ar.po
+- Add more options in the settings for prayer times.
+- Add previous releases in NEWS file
+- relpace glib with GObject, to prevent (Segmentation fault)
+- fix notification actions
+- fix Gst player 
+
 * Sun Feb 16 2014 Mosaab Alzoubi <moceap@hotmail.com> - 2.6.5-2
 - General Revision.
 
