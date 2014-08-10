@@ -902,7 +902,8 @@ class applet(object):
         # FIXME: please add more the authors
         dlg = Gtk.AboutDialog()
         dlg.set_default_response(Gtk.ResponseType.CLOSE)
-        dlg.set_icon_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
+        
+        dlg.set_logo_icon_name('monajat')
         try:
             dlg.set_program_name("Monajat")
         except:
