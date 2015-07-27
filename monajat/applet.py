@@ -910,8 +910,7 @@ class applet(object):
             pass
         dlg.set_name(_("Monajat"))
         #dlg.set_version(version)
-        dlg.set_copyright(["Copyright © 2015 Sabily,Ojuba"
-        "Copyright © 2009 sabily.org"])
+        dlg.set_copyright("Copyright © 2009 sabily.org - 2015 Sabily,Ojuba")
         dlg.set_comments(_("Monajat supplications"))
         dlg.set_license("""\
         This program is free software; you can redistribute it and/or modify
