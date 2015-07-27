@@ -1,90 +1,95 @@
 %global owner ojuba-org
 %global commit #Write commit number here
 
-Name:		monajat
-Summary:	Monajat Islamic Supplications
-URL:		http://ojuba.org
-Version:	2.6.5
-Release:	3%{?dist}
-Source:		https://github.com/%{owner}/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
-License:	WAQFv2 and GPLv2
-Group:		System Environment/Base
-BuildArch:	noarch
-Requires:	python, libitl
-Requires:	libitl
-Requires:	pygobject3 >= 3.0.2
-BuildRequires:	gettext
-BuildRequires:	python
-BuildRequires:	python-setuptools
-BuildRequires:	python2-devel
-
-# /usr/share/gnome-shell/extensions/Monajat@ojuba.org
+Name: monajat
+Summary: Monajat Islamic Supplications
+Summary: منظومة أذكار إسلامية
+URL: http://ojuba.org
+Version: 2.6.6
+Release: 1%{?dist}
+Source: https://github.com/%{owner}/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
+License: WAQFv2 and GPLv2
+BuildArch: noarch
+Requires: python
+Requires: libitl
+Requires: pygobject3 >= 3.0.2
+BuildRequires: ImageMagick
+BuildRequires: intltool
+BuildRequires: gettext
+BuildRequires: python-setuptools
+BuildRequires: python2-devel
 
 %description
-Monajat Islamic Supplications
+Monajat Islamic Supplications.
+
+%description -l ar
+منظومة أذكار إسلامية.
 
 %package database
-Group:		System Environment/Base
-Summary:	Monajat Islamic Supplications database
-BuildArch:	noarch
+Summary: Monajat Database
+Summary(ar): قاعدة بيانات مناجاة
+BuildArch: noarch
 
 %description database
-Monajat Islamic Supplications
+This is the database used by Monajat.
 
-This is the database used by monajat.
-
+%description database -l ar
+قاعد البيانات المُستعملة بواسطة برنامج مُناجاة.
 
 %package -n python-monajat
-Group:		System Environment/Base
-Summary:	Monajat Islamic Supplications
-BuildArch:	noarch
-Requires:	python
-Requires:	%{name}-database
-Requires:	libitl
+Summary: Monajat python module
+Summary(ar): وحدة بيثون لمُناجاة
+BuildArch: noarch
+Requires: python
+Requires: %{name}-database
+Requires: libitl
 
 %description -n python-monajat
-Monajat Islamic Supplications
+This is the python Monajat library needed by all monajat front ends.
 
-This is the python monajat library needed by all monajat front ends
+%description -n python-monajat -l ar
+مكتبة بيثون لبرنامج مُناجاة و هي مطلوبة لكل واجهات البرنامج.
 
 %package applet
-Summary:	Monajat Islamic Supplications for Desktop Tray Applet
-Group:		System Environment/Base
-BuildArch:	noarch
-Requires:	python-monajat
+Summary: Monajat Tray Applet
+Summary(ar): بريمج مُناجاة لصينية النّظام
+BuildArch: noarch
+Requires: python-monajat
 # TODO: is it better to say gnome-python2-extras ?
-Requires:	pygtk2
-Requires:	notify-python
-Requires:	desktop-notification-daemon
+Requires: pygtk2
+Requires: notify-python
+Requires: desktop-notification-daemon
 
 %description applet
-Monajat Islamic Supplications
+This package contains Monajat Desktop Tray Applet.
 
-This package contains the Desktop Tray Applet
+%description applet -l ar
+بريمج مُناجاة لصينية النّظام.
 
 %package mod
-Summary:	Monajat Islamic Supplications for console
-Group:		System Environment/Base
-BuildArch:	noarch
-Requires:	python-monajat
+Summary: Monajat for console
+Summary(ar): مُناجاة للطّرفية
+BuildArch: noarch
+Requires: python-monajat
 
 %description mod
-Monajat Islamic Supplications
+Monajat in terminal.
 
-This package contains a console application that can be used in issue message
-or in the profile
+%description mod -l ar
+مُناجاة في الطّرفية.
 
 %package screenlets
-Summary:	Monajat Islamic Supplications for Screenlets
-Group:		System Environment/Base
-BuildArch:	noarch
-Requires:	screenlets
-Requires:	python-monajat
+Summary: Monajat for Screenlets
+Summary(ar): مُناجاة لسكرينلت
+BuildArch: noarch
+Requires: screenlets
+Requires: python-monajat
 
 %description screenlets
-Monajat Islamic Supplications
+Monajat in Screenlets.
 
-This package contains screenlets version
+%description screenlets -l ar
+مُناجاة كسكرينلت.
 
 %prep
 %setup -q -n %{name}-%{commit}
@@ -93,28 +98,25 @@ This package contains screenlets version
 make %{?_smp_mflags}
 
 %install
-%makeinstall DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
 %files database
 %{_datadir}/%{name}/data.db
 
 %files -n python-monajat
-%doc README COPYING TODO NEWS
+%license COPYING
+%doc README TODO NEWS
 %{_defaultdocdir}/%{name}-%{version}/*
 %{python2_sitelib}/%{name}/*.py*
 %{python2_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
 %files applet
-#%{python2_sitelib}/%{name}/applet.py*
-#%{python2_sitelib}/%{name}/utils.py*
 %{_bindir}/%{name}-applet
 %{_datadir}/%{name}/cities.db
 %{_datadir}/%{name}/athan.ogg
 %{_datadir}/%{name}/%{name}.svg
-
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-#%{_datadir}/icons/hicolor/*/apps/%{name}.png
 /etc/xdg/autostart/*
 
 %files mod
@@ -124,6 +126,12 @@ make %{?_smp_mflags}
 %{_datadir}/screenlets/*
 
 %changelog
+* Mon Jul 27 2015 Mosaab Alzoubi <moceap#hotmail.com> - 2.6.6-1
+- Update to 2.6.6
+- Use %%make_install and %%license
+- Add Arabic Summaries and Descriptions
+- General Revision
+
 * Wed Jul 30 2014 Ehab El-Gedawy <ehabsas@gmail.com> - 2.6.5-3
 - New options in the settings for the prayer times
 - Update en_GB.po
