@@ -68,7 +68,7 @@ class Monajat (object):
 
         self.prefix=self.guess_prefix()
         self.db=os.path.join(self.prefix,'data.db')
-        self.cn=sqlite3.connect(self.db)
+        self.cn=sqlite3.connect(self.db, check_same_thread = False)
         self.c=self.cn.cursor()
         self.langs=map(lambda a: a[0],self.c.execute(SQL_GET_LANGS).fetchall())
         self.lang_boundary={}

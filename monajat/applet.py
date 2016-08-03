@@ -13,6 +13,24 @@ import math
 import json
 import time
 
+from threading import Timer, Thread, Event
+
+def MainTimer(sec):
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            stopped = Event()
+
+            def loop(): 
+                while not stopped.wait(sec): 
+                    function(*args, **kwargs)
+
+            t = Thread(target=loop)
+            t.daemon = True
+            t.start()
+            return stopped
+        return wrapper
+    return decorator
+
 # in gnome3 ['actions', 'action-icons', 'body', 'body-markup', 'icon-static', 'persistence']
 # in gnome2 ['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'sound']
 # "resident"
@@ -545,7 +563,8 @@ class applet(object):
         self.last_time = 0
         self.first_notif_done = False
         self.start_time = time.time()
-        GObject.timeout_add(1, self.timer_cb)
+        #GObject.timeout_add(1, self.timer_cb)
+        self.timer_cb()
 
     def init_notify_cb(self):
         self.notifycaps = Notify.get_server_caps ()
@@ -785,7 +804,7 @@ class applet(object):
             self.athan_show_notif()
             return True
         return False
-
+    @MainTimer(0.5)
     def timer_cb(self, *args):
         if not 'actions' in self.notifycaps:
             self.init_notify_cb()
@@ -803,7 +822,7 @@ class applet(object):
            and self.next_athan_i != self.notif_last_athan:
                self.notif_last_athan = self.next_athan_i
                self.next_cb()
-        elif self.conf['minutes'] and dt >= self.conf['minutes']*60:
+        elif self.conf['minutes'] and dt >= (self.conf['minutes']*60)/50:
                self.next_cb()
         return True
 
