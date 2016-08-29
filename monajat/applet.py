@@ -750,6 +750,7 @@ class applet(object):
         self.m.clear()
         self.m.set_lang(self.conf['lang'])
         self.render_body(self.m.go_forward())
+        self.last_time = time.time()
 
     def save_conf(self):
         self.conf['cities_db_ver'] = self.m.cities_db_ver
@@ -822,8 +823,8 @@ class applet(object):
            and self.next_athan_i != self.notif_last_athan:
                self.notif_last_athan = self.next_athan_i
                self.next_cb()
-        elif self.conf['minutes'] and dt >= (self.conf['minutes']*60)/50:
-               self.next_cb()
+        elif self.conf['minutes'] and dt >= (self.conf['minutes']*60):
+            self.next_cb()
         return True
 
     def fuzzy_delta(self):
