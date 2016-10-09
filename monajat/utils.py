@@ -1,44 +1,35 @@
-# -*- coding: utf-8 -*-
 # -*- Mode: Python; py-indent-offset: 4 -*-
-import sys
-bus, bus_name, bus_object=None,None,None
-try:
-    import dbus
-    import dbus.service
-    from dbus.mainloop.glib import DBusGMainLoop
+# vim: tabstop=4 shiftwidth=4 expandtab
 
-    dbus_loop = DBusGMainLoop(set_as_default=True)
-    bus = dbus.SessionBus()
-except ImportError: pass
+import dbus
+import dbus.bus
+import dbus.service
+import dbus.mainloop.glib
 
-def init_dbus(cb, interface="org.ojuba.Monajat"):
-    global bus_name, bus_object
-    if not bus: return
-    class Manager(dbus.service.Object):
-        def __init__(self, cb, bus, path):
-                    dbus.service.Object.__init__(self,bus,path)
-                    self.cb=cb
+bus_interface="org.ojuba.Monajat"
 
-        @dbus.service.method(interface, in_signature='as', out_signature='i')
-        def call(self,a):
-            return self.cb()
+    
+class OjDBus(dbus.service.Object):
+    def __init__ (self, app, bus, path='/', bus_interface="org.ojuba.Monajat"):
+        self.app = app()
+        dbus.service.Object.__init__ (self, bus, path, bus_interface)
+        self.running = True
+        
+    @dbus.service.method(bus_interface, in_signature='', out_signature='')
+    def start (self):
+        self.app.dbus_cb()
 
-    # values from /usr/include/dbus-1.0/dbus/dbus-shared.h
-    r=bus.request_name(interface, flags=0x4)
-    if r!=1:
-        print "Another process own this service, pass request to it: "
-        trials=0; appletbus=False
-        while(appletbus==False and trials<20):
-            print ".",
-            try:
-                appletbus=bus.get_object(interface,"/Manager"); break
-            except:
-                appletbus=False
-            time.sleep(1); trials+=1
-        print "*"
-        if appletbus: exit(appletbus.call(sys.argv[1:],dbus_interface=interface))
-        else: print "unable to connect"
+def setup_dbus(gtk_app, bus_interface="org.ojuba.Monajat"):
+    dbus.mainloop.glib.DBusGMainLoop (set_as_default=True)
+    bus = dbus.SessionBus ()
+    request = bus.request_name (bus_interface, dbus.bus.NAME_FLAG_DO_NOT_QUEUE)
+    
+    if request != dbus.bus.REQUEST_NAME_REPLY_EXISTS:
+        app = OjDBus(gtk_app, bus, '/', bus_interface)
+    else:
+        print "Exiting: Application already running..."
+        object = bus.get_object (bus_interface, "/")
+        app = dbus.Interface (object, bus_interface)
+        app.start()
         exit(-1)
-    bus_name = dbus.service.BusName(interface, bus)
-    bus_object = Manager(cb, bus, '/Manager')
 

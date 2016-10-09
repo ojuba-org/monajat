@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 # -*- Mode: Python; py-indent-offset: 4 -*-
+
+import gi
+gi.require_version('Notify', '0.7')
+gi.require_version('Gtk', '3.0')
+gi.require_version('Notify', '0.7')
+gi.require_version('Gst', '1.0')
+from gi.repository import Gtk, Gdk, Notify, Gst, GObject
+
 import os, os.path
 import itl
 from monajat import Monajat
-from utils import init_dbus
+from utils import setup_dbus
 import locale, gettext
 import re
 
-from gi.repository import Gtk, Gdk, Notify, Gst, GObject
 import cgi
 import math
 import json
@@ -1057,9 +1064,10 @@ class applet(object):
 
 def applet_main():
     Gtk.Window.set_default_icon_name('monajat')
-    a = applet()
-    init_dbus(a.dbus_cb)
+    #a = applet
+    setup_dbus(applet)
     Gtk.main()
+    
 
 if __name__ == "__main__":
     applet_main()
