@@ -1,13 +1,12 @@
 %global owner ojuba-org
-%global commit #Write commit number here
 
 Name: monajat
 Summary: Monajat Islamic Supplications
 Summary: منظومة أذكار إسلامية
 URL: http://ojuba.org
-Version: 2.6.6
+Version: 3.0
 Release: 1%{?dist}
-Source: https://github.com/%{owner}/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
+Source: https://github.com/%{owner}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 License: WAQFv2 and GPLv2
 BuildArch: noarch
 Requires: python
@@ -92,7 +91,7 @@ Monajat in Screenlets.
 مُناجاة كسكرينلت.
 
 %prep
-%setup -q -n %{name}-%{commit}
+%autosetup -n %{name}-%{version}
 
 %build
 make %{?_smp_mflags}
@@ -126,6 +125,10 @@ make %{?_smp_mflags}
 %{_datadir}/screenlets/*
 
 %changelog
+* Wed Feb 8 2017 Mosaab Alzoubi <moceap#hotmail.com> - 3.0-1
+- Update to 3.0
+- New way to Github
+
 * Mon Jul 27 2015 Mosaab Alzoubi <moceap#hotmail.com> - 2.6.6-1
 - Update to 2.6.6
 - Use %%make_install and %%license
