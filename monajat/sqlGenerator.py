@@ -28,7 +28,7 @@ SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, merits, links, media) V
 
 def parse(f):
     parsed=clear_record.copy()
-    a=map(lambda l: l.decode('utf-8').rstrip(),open(f,"rt").readlines())
+    a=map(lambda l: l.rstrip(),open(f,"rt").readlines())
     key=None
     for n,l in enumerate(a):
         if l.startswith(u'@'):
@@ -38,7 +38,7 @@ def parse(f):
             if len(kv)==2: values=[kv[1]]
             else: values=[]
         else:
-            if not key: raise SyntaxError, "error parsing file [%s] at line [%d]" % (f,n+1)
+            if not key: raise SyntaxError("error parsing file [%s] at line [%d]" % (f,n+1))
             values.append(l.strip())
     if key: parsed[key]=u'\n'.join(values)
     return parsed
@@ -48,6 +48,7 @@ def generate(prefix):
     pat=os.path.join(prefix,'*','*.txt')
     files=glob(pat)
     files.sort()
+    print(files)
     try: os.unlink(db)
     except OSError: pass
     cn=sqlite3.connect(db, isolation_level=None)
@@ -56,7 +57,7 @@ def generate(prefix):
     c.execute('BEGIN TRANSACTION')
     #for f in sys.argv[1:]:
     for f in files:
-        print "adding [%s]..." % f
+        print ("adding [%s]..." % f)
         c.execute(SQL_ADD_ROW, parse(f))
     c.execute('END TRANSACTION')
     cn.commit()

@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 import sys, os, os.path
 fn=os.path.expanduser('~/.monajat-applet-skip-auto')

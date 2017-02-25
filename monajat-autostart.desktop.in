@@ -2,7 +2,7 @@
 Encoding=UTF-8
 _Name=Monajat Applet for supplications
 _Comment=Monajat in system tray icon
-Exec=env GDK_BACKEND=x11 /usr/bin/monajat-applet --auto
+Exec=/usr/bin/monajat-applet
 Terminal=false
 Type=Application
 Icon=monajat

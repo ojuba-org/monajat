@@ -10,7 +10,7 @@ bus_interface="org.ojuba.Monajat"
 
     
 class OjDBus(dbus.service.Object):
-    def __init__ (self, app, bus, path='/', bus_interface="org.ojuba.Monajat"):
+    def __init__(self, app, bus, path='/', bus_interface="org.ojuba.Monajat"):
         self.app = app()
         dbus.service.Object.__init__ (self, bus, path, bus_interface)
         self.running = True
@@ -27,7 +27,7 @@ def setup_dbus(gtk_app, bus_interface="org.ojuba.Monajat"):
     if request != dbus.bus.REQUEST_NAME_REPLY_EXISTS:
         app = OjDBus(gtk_app, bus, '/', bus_interface)
     else:
-        print "Exiting: Application already running..."
+        print ("Exiting: Application already running...")
         object = bus.get_object (bus_interface, "/")
         app = dbus.Interface (object, bus_interface)
         app.start()

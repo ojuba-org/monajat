@@ -9,14 +9,14 @@ Release: 1%{?dist}
 Source: https://github.com/%{owner}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 License: WAQFv2 and GPLv2
 BuildArch: noarch
-Requires: python
+Requires: python3
 Requires: libitl
 Requires: pygobject3 >= 3.0.2
 BuildRequires: ImageMagick
 BuildRequires: intltool
 BuildRequires: gettext
-BuildRequires: python-setuptools
-BuildRequires: python2-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-devel
 
 %description
 Monajat Islamic Supplications.
@@ -35,25 +35,25 @@ This is the database used by Monajat.
 %description database -l ar
 قاعد البيانات المُستعملة بواسطة برنامج مُناجاة.
 
-%package -n python-monajat
+%package -n python3-monajat
 Summary: Monajat python module
 Summary(ar): وحدة بيثون لمُناجاة
 BuildArch: noarch
-Requires: python
+Requires: python3
 Requires: %{name}-database
 Requires: libitl
 
-%description -n python-monajat
+%description -n python3-monajat
 This is the python Monajat library needed by all monajat front ends.
 
-%description -n python-monajat -l ar
+%description -n python3-monajat -l ar
 مكتبة بيثون لبرنامج مُناجاة و هي مطلوبة لكل واجهات البرنامج.
 
 %package applet
 Summary: Monajat Tray Applet
 Summary(ar): بريمج مُناجاة لصينية النّظام
 BuildArch: noarch
-Requires: python-monajat
+Requires: python3-monajat
 # TODO: is it better to say gnome-python2-extras ?
 Requires: pygtk2
 Requires: notify-python
@@ -69,7 +69,7 @@ This package contains Monajat Desktop Tray Applet.
 Summary: Monajat for console
 Summary(ar): مُناجاة للطّرفية
 BuildArch: noarch
-Requires: python-monajat
+Requires: python3-monajat
 
 %description mod
 Monajat in terminal.
@@ -82,7 +82,7 @@ Summary: Monajat for Screenlets
 Summary(ar): مُناجاة لسكرينلت
 BuildArch: noarch
 Requires: screenlets
-Requires: python-monajat
+Requires: python3-monajat
 
 %description screenlets
 Monajat in Screenlets.
@@ -102,12 +102,12 @@ make %{?_smp_mflags}
 %files database
 %{_datadir}/%{name}/data.db
 
-%files -n python-monajat
+%files -n python3-monajat
 %license COPYING
 %doc README TODO NEWS
 %{_defaultdocdir}/%{name}-%{version}/*
-%{python2_sitelib}/%{name}/*.py*
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/%{name}/*.py*
+%{python3_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
 %files applet

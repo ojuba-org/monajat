@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # This application is released under the GNU General Public License 
 # v3 (or, at your option, any later version). You can find the full 
@@ -21,7 +21,7 @@ import sys
 import gtk
 import gobject
 import os
-import cgi
+import html
 
 is_manager = screenlets.utils.is_manager_running_me()
 try:
@@ -31,7 +31,7 @@ except:
         screenlets.show_message(None,"You don't have monajat installed!\nInstall monajat-python.")
         sys.exit()
     else:
-        print "You don't have monajat installed!\nInstall monajat-python."
+        print ("You don't have monajat installed!\nInstall monajat-python.")
         sys.exit()
 
 class MonajatScreenlet(screenlets.Screenlet):
@@ -110,8 +110,8 @@ class MonajatScreenlet(screenlets.Screenlet):
         for l in links:
             ll=l.split(u'\t',1)
             url=ll[0]
-            if len(ll)>1: t=cgi.escape(ll[1])
-            else: t=cgi.escape(url)
+            if len(ll)>1: t=html.escape(ll[1])
+            else: t=html.escape(url)
             i= gtk.MenuItem(t)
             i.connect("activate", self.net_menu_cb,url)
             i.show()
@@ -119,7 +119,7 @@ class MonajatScreenlet(screenlets.Screenlet):
         self.net_menu.set_submenu(mm)
 
     def on_init (self):
-        print "Screenlet has been initialized."
+        print ("Screenlet has been initialized.")
         # add default menuitems
         self.add_default_menuitems(screenlets.DefaultMenuItem.XML)
         self.net_menu=self.add_menuitem('internet', 'More from internet')
@@ -135,7 +135,7 @@ class MonajatScreenlet(screenlets.Screenlet):
             self.__m.clear()
             self.__m.set_lang(self.lang)
         ld=os.path.join(self.__m.get_prefix(),'..','locale')
-        gettext.install('monajat', ld, unicode=0)
+        gettext.install('monajat', ld)
         self.refresh_text()
 
     def menuitem_callback(self, widget, id):
@@ -218,7 +218,7 @@ class MonajatScreenlet(screenlets.Screenlet):
                 button_det = 4+int((x-9)/18)
             elif x >= 135 and x <= 187:
                 button_det = 1+int((x-135)/18)
-            print button_det
+            print (button_det)
 
         self.__button_pressed = button_det
         if button_det:
@@ -236,7 +236,7 @@ class MonajatScreenlet(screenlets.Screenlet):
             if self.theme_name == 'default':self.draw_rounded_rectangle(ctx,0,0,17,200,200)
             self.theme.render(ctx,'background')
         ctx.save()
-        try: name = _("Monajat")
+        try: name = ("Monajat")
         except NameError: return # gettext is not loaded yet
         self.bidi_dir=pango.ALIGN_CENTER
         #self.bidi_dir=pango.ALIGN_LEFT

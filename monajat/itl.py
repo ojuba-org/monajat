@@ -214,7 +214,7 @@ class PrayerTimes:
         self.location.degreeLat=lat
         self.location.gmtDiff=tz
         self.location.dst=dst
-        print tz,dst
+        print (tz,dst)
         self.location.seaLevel = alt
         self.location.pressure = pressure
         self.location.temperature= temp
@@ -250,7 +250,7 @@ class PrayerTimes:
         t=int(time.time())
         d=time.localtime()
         t-=d.tm_hour*3600+d.tm_min*60+d.tm_sec
-        self.stamps=map(lambda p: t+p.hour*3600+p.minute*60+p.second, self.get_prayers(cache))
+        self.stamps=list(map(lambda p: t+p.hour*3600+p.minute*60+p.second, self.get_prayers(cache)))
         self.stamps.append(self.stamps[0]+86400)
         return self.stamps
 
@@ -274,7 +274,7 @@ if __name__ == "__main__":
         # high level examples for Mecca
         pt=PrayerTimes()
         for i in pt.get_prayers():
-            print i.hour, i.minute, i.second
+            print (i.hour, i.minute, i.second)
         # low level examples for Abu Dhabi
         loc=Location()
         date=Date()
@@ -294,6 +294,6 @@ if __name__ == "__main__":
         method.round = 0
         ptList=getPrayerTimes(loc, method, date)
         for i in ptList:
-            print i.hour, i.minute, i.second
+            print (i.hour, i.minute, i.second)
 
 

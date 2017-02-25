@@ -68,9 +68,11 @@ class Monajat (object):
 
         self.prefix=self.guess_prefix()
         self.db=os.path.join(self.prefix,'data.db')
+        #self.db='/home/mjlad/PycharmProjects/monajat-master/monajat-data/data.db'
+        print(self.db)
         self.cn=sqlite3.connect(self.db, check_same_thread = False)
         self.c=self.cn.cursor()
-        self.langs=map(lambda a: a[0],self.c.execute(SQL_GET_LANGS).fetchall())
+        self.langs=list(map(lambda a: a[0],self.c.execute(SQL_GET_LANGS).fetchall()))
         self.lang_boundary={}
         for l in self.langs:
             i=self.c.execute(SQL_GET_LANG_START, (l,)).fetchone()[0]
@@ -81,11 +83,12 @@ class Monajat (object):
         self.fallback_lang='ar'
         self.set_lang()
         self.cities_db=os.path.join(self.prefix,'cities.db')
+        #self.cities_db = '/home/mjlad/PycharmProjects/monajat-master/monajat-data/cities.db'
         self.cities_cn=sqlite3.connect(self.cities_db)
         self.cities_cn.row_factory=sqlite3.Row
         self.cities_c=self.cities_cn.cursor()
         r=self.cities_c.execute('select v from params where k=?', ('ver',)).fetchone()
-        print dict(r)
+        print (dict(r))
         if r: self.cities_db_ver=r['v']
         else: self.cities_db_ver='0'
 
