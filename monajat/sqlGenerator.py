@@ -48,7 +48,6 @@ def generate(prefix):
     pat=os.path.join(prefix,'*','*.txt')
     files=glob(pat)
     files.sort()
-    print(files[31])
     try: os.unlink(db)
     except OSError: pass
     cn=sqlite3.connect(db, isolation_level=None)
