@@ -4,7 +4,7 @@ Name: monajat
 Summary: Monajat Islamic Supplications
 Summary(ar): منظومة أذكار إسلامية
 URL: http://ojuba.org
-Version: 4.0
+Version: 4.1
 Release: 1%{?dist}
 Source: https://github.com/%{owner}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 License: WAQFv2 and GPLv2
@@ -125,7 +125,10 @@ make %{?_smp_mflags}
 %{_datadir}/screenlets/*
 
 %changelog
-* Wed Feb 8 2017 Mosaab Alzoubi <moceap#hotmail.com> - 4.0-1
+* Mon Feb 27 2017 Mosaab Alzoubi <moceap#hotmail.com> - 4.1-1
+- Fix issues
+
+* Sat Feb 25 2017 Mosaab Alzoubi <moceap#hotmail.com> - 4.0-1
 - Port to Python 3 by Mejlad AlSubaie
 - Native Wayland support by Mejlad AlSubaie
 - Update to 4.0
