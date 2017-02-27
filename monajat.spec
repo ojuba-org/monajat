@@ -39,6 +39,7 @@ This is the database used by Monajat.
 Summary: Monajat python module
 Summary(ar): وحدة بيثون لمُناجاة
 BuildArch: noarch
+Obsoletesa: python-monajat
 Requires: python3
 Requires: %{name}-database
 Requires: libitl
@@ -106,7 +107,7 @@ make %{?_smp_mflags}
 %license COPYING
 %doc README TODO NEWS
 %{_defaultdocdir}/%{name}-%{version}/*
-%{python3_sitelib}/%{name}/*.py*
+%{python3_sitelib}/%{name}/*
 %{python3_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
