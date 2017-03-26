@@ -4,19 +4,19 @@ Name: monajat
 Summary: Monajat Islamic Supplications
 Summary(ar): منظومة أذكار إسلامية
 URL: http://ojuba.org
-Version: 4.1
+Version: 3.1
 Release: 1%{?dist}
 Source: https://github.com/%{owner}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 License: WAQFv2 and GPLv2
 BuildArch: noarch
-Requires: python3
+Requires: python
 Requires: libitl
 Requires: pygobject3 >= 3.0.2
 BuildRequires: ImageMagick
 BuildRequires: intltool
 BuildRequires: gettext
-BuildRequires: python3-setuptools
-BuildRequires: python3-devel
+BuildRequires: python-setuptools
+BuildRequires: python2-devel
 
 %description
 Monajat Islamic Supplications.
@@ -35,26 +35,25 @@ This is the database used by Monajat.
 %description database -l ar
 قاعد البيانات المُستعملة بواسطة برنامج مُناجاة.
 
-%package -n python3-monajat
+%package -n python-monajat
 Summary: Monajat python module
 Summary(ar): وحدة بيثون لمُناجاة
 BuildArch: noarch
-Obsoletesa: python-monajat
-Requires: python3
+Requires: python
 Requires: %{name}-database
 Requires: libitl
 
-%description -n python3-monajat
+%description -n python-monajat
 This is the python Monajat library needed by all monajat front ends.
 
-%description -n python3-monajat -l ar
+%description -n python-monajat -l ar
 مكتبة بيثون لبرنامج مُناجاة و هي مطلوبة لكل واجهات البرنامج.
 
 %package applet
 Summary: Monajat Tray Applet
 Summary(ar): بريمج مُناجاة لصينية النّظام
 BuildArch: noarch
-Requires: python3-monajat
+Requires: python-monajat
 # TODO: is it better to say gnome-python2-extras ?
 Requires: pygtk2
 Requires: notify-python
@@ -70,7 +69,7 @@ This package contains Monajat Desktop Tray Applet.
 Summary: Monajat for console
 Summary(ar): مُناجاة للطّرفية
 BuildArch: noarch
-Requires: python3-monajat
+Requires: python-monajat
 
 %description mod
 Monajat in terminal.
@@ -83,7 +82,7 @@ Summary: Monajat for Screenlets
 Summary(ar): مُناجاة لسكرينلت
 BuildArch: noarch
 Requires: screenlets
-Requires: python3-monajat
+Requires: python-monajat
 
 %description screenlets
 Monajat in Screenlets.
@@ -103,12 +102,12 @@ make %{?_smp_mflags}
 %files database
 %{_datadir}/%{name}/data.db
 
-%files -n python3-monajat
+%files -n python-monajat
 %license COPYING
 %doc README TODO NEWS
 %{_defaultdocdir}/%{name}-%{version}/*
-%{python3_sitelib}/%{name}/*
-%{python3_sitelib}/*.egg-info
+%{python2_sitelib}/%{name}/*.py*
+%{python2_sitelib}/*.egg-info
 %{_datadir}/locale/*/*/*.mo
 
 %files applet
@@ -126,14 +125,6 @@ make %{?_smp_mflags}
 %{_datadir}/screenlets/*
 
 %changelog
-* Mon Feb 27 2017 Mosaab Alzoubi <moceap#hotmail.com> - 4.1-1
-- Fix issues
-
-* Sat Feb 25 2017 Mosaab Alzoubi <moceap#hotmail.com> - 4.0-1
-- Port to Python 3 by Mejlad AlSubaie
-- Native Wayland support by Mejlad AlSubaie
-- Update to 4.0
-
 * Wed Feb 8 2017 Mosaab Alzoubi <moceap#hotmail.com> - 3.1-1
 - Enable run on Wayland
 

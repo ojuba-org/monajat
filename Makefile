@@ -9,7 +9,7 @@ TARGETS = ${SOURCES:.in=}
 
 ECHO := echo
 NAKE := make
-PYTHON := python3
+PYTHON := python2
 INSTALL := install
 INTLTOOL_MERGE := intltool-merge
 RM := $(shell which rm | egrep '/' | sed  's/\s//g')

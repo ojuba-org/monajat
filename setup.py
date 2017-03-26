@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/python
 from distutils.core import setup
 from glob import *
 import os, sys

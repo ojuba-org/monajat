@@ -9,13 +9,13 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, Gdk, Notify, Gst, GObject
 
 import os, os.path
-from monajat import itl
-from monajat.monajat import Monajat
-from monajat.utils import setup_dbus
+import itl
+from monajat import Monajat
+from utils import setup_dbus
 import locale, gettext
 import re
 
-import html
+import cgi
 import math
 import json
 import time
@@ -72,7 +72,7 @@ class SoundPlayer(object):
         
     def on_message(self, bus, message):
         if message:
-            print (message)
+            print message
         self.gst_player.set_state(Gst.State.NULL)
 
 normalize_tb = {
@@ -86,7 +86,7 @@ def to_uincode(Str):
         Str = str(Str)
     except UnicodeEncodeError:
         pass
-    if type(Str) == str:
+    if type(Str) == unicode:
         return Str.translate(normalize_tb)
     else:
         return Str.decode('utf-8').translate(normalize_tb)
@@ -101,26 +101,26 @@ class ConfigDlg(Gtk.Dialog):
         self.set_resizable(False) # FIXME: reconsider this
         self.connect('delete-event', lambda w,*a: w.hide() or True)
         self.connect('response', lambda w,*a: w.hide() or True)
-        self.set_title(('Monajat Configuration'))
-        self.add_button(('Cancel'), Gtk.ResponseType.CANCEL)
-        self.add_button(('Save'), Gtk.ResponseType.OK)
+        self.set_title(_('Monajat Configuration'))
+        self.add_button(_('Cancel'), Gtk.ResponseType.CANCEL)
+        self.add_button(_('Save'), Gtk.ResponseType.OK)
         tabs = Gtk.Notebook()
         tabs.set_size_request(-1,350)
         self.get_content_area().add(tabs)
         vb = Gtk.VBox(False, 2)
-        tabs.append_page(vb, Gtk.Label(('Generic')))
-        self.auto_start = b = Gtk.CheckButton(("Auto start"))
+        tabs.append_page(vb, Gtk.Label(_('Generic')))
+        self.auto_start = b = Gtk.CheckButton(_("Auto start"))
         self.auto_start.set_active(not os.path.exists(self.applet.skip_auto_fn))
         vb.pack_start(b, False, False, 2)
-        self.show_merits = b = Gtk.CheckButton(("Show merits"))
+        self.show_merits = b = Gtk.CheckButton(_("Show merits"))
         self.show_merits.set_active(self.applet.conf['show_merits'])
         vb.pack_start(b, False, False, 2)
-        self.daylight_savings_time = b = Gtk.CheckButton(("daylight_savings_time"))
+        self.daylight_savings_time = b = Gtk.CheckButton(_("daylight_savings_time"))
         self.daylight_savings_time.set_active(self.applet.conf['daylight_savings_time'])
         vb.pack_start(b, False, False, 2)        
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('method:')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('method:')), False, False, 2)
         self.pt_method = b = Gtk.ComboBoxText.new()
         hb.pack_end(b, False, False, 2)
         b.append_text("none. Set to default")
@@ -135,7 +135,7 @@ class ConfigDlg(Gtk.Dialog):
         b.set_active(self.applet.conf['pt_method'])      
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Language:')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Language:')), False, False, 2)
         self.lang = b = Gtk.ComboBoxText.new()
         hb.pack_end(b, False, False, 2)
         selected = 0
@@ -147,20 +147,20 @@ class ConfigDlg(Gtk.Dialog):
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Time:')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Time:')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, 0, 90, 5, 5)
         self.timeout = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
 
         vb = Gtk.VBox(False, 2)
-        tabs.append_page(vb, Gtk.Label(('Location')))
+        tabs.append_page(vb, Gtk.Label(_('Location')))
         
         hb = Gtk.HBox()
-        hb.pack_start(Gtk.Label(('Current city:')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Current city:')), False, False, 2)
         vb.pack_start(hb, False, False, 6)
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
@@ -171,7 +171,7 @@ class ConfigDlg(Gtk.Dialog):
             self.user_city = c['name']
         else:
             c = {}
-            c['country'] = ('Please, Secify your city')
+            c['country'] = _('Please, Secify your city')
             c['state'] = ''
             c['name'] = ''
             c['locale_name'] = ''
@@ -185,7 +185,7 @@ class ConfigDlg(Gtk.Dialog):
         hb.pack_start(l, True, True, 2)
         
         hb = Gtk.HBox()
-        hb.pack_start(Gtk.Label(('Change city:')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Change city:')), False, False, 2)
         vb.pack_start(hb, False, False, 8)
         self.Search_e = e = Gtk.Entry()
         e.connect('activate', self._city_search_cb)
@@ -209,110 +209,110 @@ class ConfigDlg(Gtk.Dialog):
                                         self.change_play_status)
 
         vb = Gtk.VBox(False, 2)
-        tabs.append_page(vb, Gtk.Label(('Edit_pt')))
+        tabs.append_page(vb, Gtk.Label(_('Edit_pt')))
         
-        self.Edit_pt = b = Gtk.CheckButton(("Edit_pt"))
+        self.Edit_pt = b = Gtk.CheckButton(_("Edit_pt"))
         self.Edit_pt.set_active(self.applet.conf['Edit_pt'])
         vb.pack_start(b, False, False, 2)
 
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Fajr')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Fajr')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Fajr_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Fajr_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Sunrise')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Sunrise')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Shrooq_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Shrooq_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Dhuhr')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Dhuhr')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Zuhr_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Zuhr_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Asr')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Asr')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Asr_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Asr_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(('Maghrib')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('Maghrib')), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Maghrib_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Maghrib_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        hb.pack_start(Gtk.Label(("Isha'a")), False, False, 2)
+        hb.pack_start(Gtk.Label(_("Isha'a")), False, False, 2)
         hb.pack_start(Gtk.HBox(), True, True, 2)
         adj = Gtk.Adjustment(5, -60, 60, 1, 5)
         self.Ishaa_min = b = Gtk.SpinButton()
         b.set_adjustment(adj)
         b.set_value(self.applet.conf['Ishaa_minutes'])
         hb.pack_start(b, False, False, 2)
-        hb.pack_start(Gtk.Label(('minutes')), False, False, 2)
+        hb.pack_start(Gtk.Label(_('minutes')), False, False, 2)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 2)
-        self.clear = cb = Gtk.Button(('Clear'))
+        self.clear = cb = Gtk.Button(_('Clear'))
         cb.connect('clicked', self.clear_pt_changes)
         hb.pack_end(cb, False, False, 2)
 
         vb = Gtk.VBox(False, 2)
-        tabs.append_page(vb, Gtk.Label(('Notification')))
+        tabs.append_page(vb, Gtk.Label(_('Notification')))
         hb = Gtk.HBox()
         vb.pack_start(hb, False, True, 3)
-        hb.pack_start(Gtk.Label(('Sound:')), False, True, 2)
-        self.sound_file = b = Gtk.FileChooserButton(('Choose Athan media file'))
+        hb.pack_start(Gtk.Label(_('Sound:')), False, True, 2)
+        self.sound_file = b = Gtk.FileChooserButton(_('Choose Athan media file'))
         
         if os.path.isfile(self.applet.conf['athan_media_file']):
             self.sound_file.set_filename(self.applet.conf['athan_media_file'])
         ff = Gtk.FileFilter()
-        ff.set_name(('Sound Files'))
+        ff.set_name(_('Sound Files'))
         ff.add_pattern('*.ogg')
         ff.add_pattern('*.mp3')
         b.add_filter(ff)
         ff = Gtk.FileFilter()
-        ff.set_name(('All files'))
+        ff.set_name(_('All files'))
         ff.add_pattern('*')
         b.add_filter(ff)
-        self.play_b = pb = Gtk.Button(('Play'))
+        self.play_b = pb = Gtk.Button(_('Play'))
         pb.connect('clicked', self.play_cb)
         hb.pack_end(pb, False, False, 2)
         hb.pack_end(b, True, True, 5)
         
         hb = Gtk.HBox()
         vb.pack_start(hb, False, False, 3)
-        self.notify_before_b = b = Gtk.CheckButton(("Notify before"))
+        self.notify_before_b = b = Gtk.CheckButton(_("Notify before"))
         adj = Gtk.Adjustment(5, 5, 20, 5, 5)
         self.notify_before_t = t = Gtk.SpinButton()
         t.set_adjustment(adj)
@@ -320,7 +320,7 @@ class ConfigDlg(Gtk.Dialog):
         t.set_value(self.applet.conf['notify_before_min'])
         hb.pack_start(b,True,True,2)
         hb.pack_start(t,False,False,2)
-        hb.pack_start(Gtk.Label(('minutes')),False,False,2)
+        hb.pack_start(Gtk.Label(_('minutes')),False,False,2)
         self._city_search_cb(self.Search_e, self.user_city)
         #self._fill_cities()
 
@@ -337,16 +337,16 @@ class ConfigDlg(Gtk.Dialog):
             status = self.sound_player.gst_player.get_state()
         if status == Gst.State.PLAYING:
             self.sound_file.set_sensitive(False)
-            self.play_b.set_property('label', ('Stop'))
+            self.play_b.set_property('label', _('Stop'))
         else:
             self.sound_file.set_sensitive(True)
-            self.play_b.set_property('label', ('Play'))
+            self.play_b.set_property('label', _('Play'))
 
     def play_cb(self, b):
         fn = self.sound_file.get_filename()
         if not fn:
             fn = ''
-        if b.get_label() == ('Play'):
+        if b.get_label() == _('Play'):
             if not os.path.isfile(fn):
                 return
             self.change_play_status(Gst.State.PLAYING)
@@ -418,7 +418,7 @@ class ConfigDlg(Gtk.Dialog):
         # FIXME: if same as last successful search text don't update first_match_path
         # FIXME: and if self.city_found same as first_match_path highlight in red
         # we can use self.search_last_path to fix search
-        if type(txt) == bytes:
+        if type(txt) == unicode:
             txt = txt.encode('utf-8')
         e = self.Search_e
         e.modify_fg(Gtk.StateType.NORMAL, None)
@@ -541,8 +541,13 @@ class applet(object):
 
         self._init_locale(self.m.lang)
         ld = os.path.join(self.m.get_prefix(), '..', 'locale')
-        gettext.install('monajat', ld)
-        self.ptnames = [("Fajr"),("Sunrise"),("Dhuhr"),("Asr"),("Maghrib"),("Isha'a")]
+        gettext.install('monajat', ld, unicode=0)
+        self.ptnames = [_("Fajr"),
+                        _("Sunrise"),
+                        _("Dhuhr"),
+                        _("Asr"),
+                        _("Maghrib"),
+                        _("Isha'a")]
         self.clip1 = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         self.clip2 = Gtk.Clipboard.get(Gdk.SELECTION_PRIMARY)
         self.init_menu()
@@ -551,12 +556,12 @@ class applet(object):
         self.statusicon = Gtk.StatusIcon ()
         self.statusicon.connect('popup-menu',self.popup_cb)
         self.statusicon.connect('activate',self.next_cb)
-        self.statusicon.set_title(("Monajat"))
+        self.statusicon.set_title(_("Monajat"))
         self.statusicon.set_from_file(os.path.join(self.m.get_prefix(),'monajat.svg'))
         
-        Notify.init(("Monajat"))
+        Notify.init(_("Monajat"))
         self.init_notify_cb()
-        print (self.notifycaps)
+        print self.notifycaps
         
         self.notif_last_athan = -1
         self.next_athan_delta = -1
@@ -572,11 +577,11 @@ class applet(object):
         self.notifycaps = Notify.get_server_caps ()
         self.notify = Notify.Notification()
         self.notify.set_property('icon-name', os.path.join(self.m.get_prefix(),'monajat.svg'))
-        self.notify.set_property('summary', ("Monajat") )
+        self.notify.set_property('summary', _("Monajat") )
         if 'actions' in self.notifycaps:
-            self.notify.add_action("previous", ("Back"), self.notify_cb, None)
-            self.notify.add_action("next", ("Forward"), self.notify_cb, None)
-            self.notify.add_action("copy", ("copy"), self.notify_cb, None)
+            self.notify.add_action("previous", _("Back"), self.notify_cb, None)
+            self.notify.add_action("next", _("Forward"), self.notify_cb, None)
+            self.notify.add_action("copy", _("copy"), self.notify_cb, None)
         
     def show_notify_cb(self, body, *args):
         self.notify.set_property('body', body )
@@ -606,12 +611,12 @@ class applet(object):
         self.conf['lang'] = self.m.lang
         self.conf['minutes'] = '10'
         self.conf['athan_media_file'] = os.path.join(self.m.prefix, 'athan.ogg')
-        print (self.conf['athan_media_file'])
+        print self.conf['athan_media_file']
         self.conf['notify_before_min'] = '10'
 
     def conf_to_prayer_args(self):
         kw = {}
-        if 'city_id' not in self.conf: return kw
+        if not self.conf.has_key('city_id'): return kw
         c = self.m.cities_c
         try:
             c_id = int(self.conf['city_id'])
@@ -638,17 +643,17 @@ class applet(object):
         #else:
         #    # FIXME: add DST logic here
         #    kw["dst"]=1
-        print (kw)
+        print kw
         #lat=21.43, lon=39.77, tz=3.0, dst=0, alt=0, pressure=1010, temp=10
         return kw
 
 
     def parse_conf(self, s):
         self.default_conf()
-        l1 = list(map(lambda k: k.split('=',1),
+        l1 = map(lambda k: k.split('=',1),
                  filter(lambda j: j,
-                 map(lambda i: i.strip(),s.splitlines())) ))
-        l2 = list(map(lambda a: (a[0].strip(),a[1].strip()),filter(lambda j: len(j)==2,l1)))
+                 map(lambda i: i.strip(),s.splitlines())) )
+        l2 = map(lambda a: (a[0].strip(),a[1].strip()),filter(lambda j: len(j)==2,l1))
         r = dict(l2)
         self.conf.update(dict(l2))
         return len(l1) == len(l2)
@@ -662,9 +667,9 @@ class applet(object):
             except OSError:
                 pass
         self.parse_conf(s)
-        if 'city_id' in self.conf:
+        if self.conf.has_key('city_id'):
             # make sure city_id is set using the same db
-            if 'cities_db_ver' not in self.conf \
+            if not self.conf.has_key('cities_db_ver') \
                or self.conf['cities_db_ver'] != self.m.cities_db_ver:
                    del self.conf['city_id']
             # make sure it's integer
@@ -776,7 +781,7 @@ class applet(object):
             city_id = m[p[0]][2]
             if city_id:
                 self.conf['city_id'] = city_id
-        print ("** saving conf", self.conf)
+        print "** saving conf", self.conf
         fn = os.path.expanduser('~/.monajat-applet.rc')
         s = '\n'.join(map(lambda k: "%s=%s" % (k,str(self.conf[k])), self.conf.keys()))
         try:
@@ -789,7 +794,7 @@ class applet(object):
         self.last_time = time.time()
         self.first_notif_done = True
         s = self.ptnames[self.last_athan]
-        self.show_notify_cb(('''It's now time for %s prayer''') % s)
+        self.show_notify_cb(_('''It's now time for %s prayer''') % s)
         return True
 
     def athan_notif_cb(self):
@@ -801,7 +806,7 @@ class applet(object):
         self.next_athan_delta = dt
         self.next_athan_i = i
         if dt < 30 and i != self.last_athan:
-            print ("it's time for prayer number:", i)
+            print "it's time for prayer number:", i
             self.last_athan = i
             self.sound_player.play()
             self.athan_show_notif()
@@ -811,7 +816,7 @@ class applet(object):
     def timer_cb(self, *args):
         if not 'actions' in self.notifycaps:
             self.init_notify_cb()
-            print (self.notifycaps)
+            print self.notifycaps
         dt = int(time.time()-self.last_time)
         if self.prayer.update():
             self.update_prayer()
@@ -839,19 +844,19 @@ class applet(object):
         d['minutes'] = t/60
         if d["hours"]:
             if d["minutes"] < 5:
-                r = ("""%(hours)d hours till %(prayer)s prayer""") % d
+                r = _("""%(hours)d hours till %(prayer)s prayer""") % d
             else:
-                r = ("""%(hours)d hours and %(minutes)d minutes till %(prayer)s prayer""") % d
+                r = _("""%(hours)d hours and %(minutes)d minutes till %(prayer)s prayer""") % d
         elif d["minutes"] >= 2:
-            r = ("""less than %(minutes)d minutes till %(prayer)s prayer""") % d
+            r = _("""less than %(minutes)d minutes till %(prayer)s prayer""") % d
         else:
-            r = ("""less than a minute till %(prayer)s prayer""") % d
+            r = _("""less than a minute till %(prayer)s prayer""") % d
         if "body-markup" in self.notifycaps:
-            return "<b>%s</b>\n\n" % html.escape(r)
+            return "<b>%s</b>\n\n" % cgi.escape(r)
         return "%s\n\n" % r
 
     def body_to_str(self, body):
-        if type(body) == bytes:
+        if type(body) == unicode:
             return body.encode('utf-8')
         return body
         
@@ -860,26 +865,30 @@ class applet(object):
         if not self.conf['show_merits']:
             merits = None
         if "body-markup" in self.notifycaps:
-            body = html.escape(m['text'])
+            body = cgi.escape(m['text'])
             if merits:
-                body = """{}\n\n<b>{}</b>: {}""".format(self.body_to_str(body),("Its Merits"),self.body_to_str(html.escape(merits)))
+                body = """{}\n\n<b>{}</b>: {}""".format(self.body_to_str(body),
+                                                        _("Its Merits"),
+                                                        self.body_to_str(cgi.escape(merits)))
         else:
             body = m['text']
             if merits:
-                body = """{}\n\n** {} **: {}""".format(self.body_to_str(body),("Its Merits"),self.body_to_str(merits))
-        if type(body) == bytes:
+                body = """{}\n\n** {} **: {}""".format(self.body_to_str(body),
+                                                       _("Its Merits"),
+                                                       self.body_to_str(merits))
+        if type(body) == unicode:
                 body = body.encode('utf-8')
         if "body-hyperlinks" in self.notifycaps:
             L = []
             links = m.get('links',u'').split(u'\n')
             for l in links:
                 ll = l.split(u'\t',1)
-                url = html.escape(ll[0])
+                url = cgi.escape(ll[0])
                 if len(ll) > 1:
-                    t = html.escape(ll[1])
+                    t = cgi.escape(ll[1])
                 else:
                     t = url
-                print (url, t)
+                print url, t
                 L.append(u"""<a href='{}'>{}</a>""".format(url,t))
             l = u"\n\n".join(L)
             body += self.body_to_str("\n\n" + l)
@@ -926,11 +935,11 @@ class applet(object):
             dlg.set_program_name("Monajat")
         except:
             pass
-        dlg.set_name(("Monajat"))
+        dlg.set_name(_("Monajat"))
         #dlg.set_version(version)
         dlg.set_copyright("""Copyright © 2009 sabily.org
         Copyright © 2010-2017 Sabily, Ojuba Team""")
-        dlg.set_comments(("Monajat supplications"))
+        dlg.set_comments(_("Monajat supplications"))
         dlg.set_license("""\
         This program is free software; you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -1006,7 +1015,7 @@ class applet(object):
 
         self.menu.add(Gtk.SeparatorMenuItem.new())
         
-        i = Gtk.MenuItem(("Configure"))
+        i = Gtk.MenuItem(_("Configure"))
         i.connect('activate', self.config_cb)
         self.menu.add(i)
         

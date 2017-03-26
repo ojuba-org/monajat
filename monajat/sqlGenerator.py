@@ -28,19 +28,19 @@ SQL_ADD_ROW="""INSERT INTO monajat (lang, ref, id, text, merits, links, media) V
 
 def parse(f):
     parsed=clear_record.copy()
-    a=map(lambda l: l.rstrip(),open(f,"r",encoding='utf-8').readlines())
+    a=map(lambda l: l.decode('utf-8').rstrip(),open(f,"rt").readlines())
     key=None
     for n,l in enumerate(a):
-        if l.startswith('@'):
-            if key: parsed[key]='\n'.join(values)
-            kv=l[1:].split('=',1)
+        if l.startswith(u'@'):
+            if key: parsed[key]=u'\n'.join(values)
+            kv=l[1:].split(u'=',1)
             key=kv[0].strip()
             if len(kv)==2: values=[kv[1]]
             else: values=[]
         else:
-            if not key: raise SyntaxError("error parsing file [%s] at line [%d]" % (f,n+1))
+            if not key: raise SyntaxError, "error parsing file [%s] at line [%d]" % (f,n+1)
             values.append(l.strip())
-    if key: parsed[key]='\n'.join(values)
+    if key: parsed[key]=u'\n'.join(values)
     return parsed
 
 def generate(prefix):
@@ -56,7 +56,7 @@ def generate(prefix):
     c.execute('BEGIN TRANSACTION')
     #for f in sys.argv[1:]:
     for f in files:
-        print ("adding [%s]..." % f)
+        print "adding [%s]..." % f
         c.execute(SQL_ADD_ROW, parse(f))
     c.execute('END TRANSACTION')
     cn.commit()
