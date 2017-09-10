@@ -4,7 +4,7 @@ Name: monajat
 Summary: Monajat Islamic Supplications
 Summary(ar): منظومة أذكار إسلامية
 URL: http://ojuba.org
-Version: 3.1
+Version: 4.1
 Release: 1%{?dist}
 Source: https://github.com/%{owner}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 License: WAQFv2 and GPLv2
