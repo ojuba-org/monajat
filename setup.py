@@ -32,7 +32,7 @@ class my_clean(clean):
         except OSError: pass
 
 # do the install
-setup (name='monajat', version='2.3.0',
+setup (name='monajat', version='4.1',
             description='Monajat Islamic Supplications',
             author='Muayyad Saleh Alsadi',
             author_email='sabily.team@lists.launchpad.net',
